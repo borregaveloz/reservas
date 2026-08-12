@@ -211,6 +211,7 @@
   function boot() {
     $('gateLogo').src = CFG.LOGO;
     $('hdrLogo').src = CFG.LOGO;
+    $('doneLogo').src = CFG.LOGO;
     $('termsLink').href = CFG.TERMOS;
 
     if (!TOKEN) {
@@ -268,6 +269,12 @@
     if (KIND === 'school') TRIP = 'round_trip';
     layout();
     scheduleQuote();
+    // no telemóvel o passo seguinte fica fora do ecrã depois de escolher —
+    // trazê-lo à vista poupa um scroll a quem está a usar uma mão só
+    var next = $('secTrip').hidden ? ($('secSchool').hidden ? $('secWhere') : $('secSchool')) : $('secTrip');
+    setTimeout(function () {
+      try { next.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    }, 90);
   }
 
   /* -------------------------------------------------------------- layout */
@@ -619,6 +626,16 @@
     $('mbway').addEventListener('input', function () { $('mbway').classList.remove('bad'); });
     $('btnGo').addEventListener('click', submit);
     $('form').addEventListener('submit', function (e) { e.preventDefault(); });
+
+    // Com o teclado aberto, a barra fixa do preço tapa metade do ecrã e ainda
+    // esconde o campo que se está a preencher. O visualViewport encolhe quando
+    // o teclado sobe — é o único sinal fiável disto no iOS.
+    if (window.visualViewport) {
+      var vv = window.visualViewport;
+      vv.addEventListener('resize', function () {
+        document.body.classList.toggle('kb', (window.innerHeight - vv.height) > 150);
+      });
+    }
   }
 
   wire();
