@@ -199,25 +199,34 @@ form{
 .ic[data-svc="privado"]   {--ic:url(icons/wheel.svg)}
 .ic[data-svc="partilhado"]{--ic:url(icons/users.svg)}
 
-/* Fotografia por serviço (opcional).
+/* ══════════════════════════ fotografia por serviço ════════════════════
  *
- * Quando um serviço tiver imagem própria, o mosaico passa a mostrá-la e o
- * ícone em traço apaga-se. Acrescentar uma imagem é uma regra só, com as
- * duas linhas juntas — sem imagem, fica o ícone, que é o que acontece hoje.
+ * Ao escolher um serviço, o topo troca para a fotografia desse serviço.
+ * É uma segunda camada por cima da foto base que se sobrepõe em fade — o
+ * background-image não é animável, por isso a transição faz-se na opacidade.
  *
- *   .ic[data-svc="escolar"]{ --pic:url(img/servicos/escolar.jpg); --ic-op:0 }
+ * Acrescentar um serviço são duas linhas, sempre juntas:
  *
- * Ficheiros em img/servicos/<chave>.jpg, quadrados (recomendado 300x300),
- * porque o mosaico é quadrado e a imagem é recortada com cover.
+ *   .hero[data-svc="escolar"]{--svc-pic:url(img/servicos/escolar.jpg)}
+ *   .hero[data-svc="escolar"]::after{opacity:1}
+ *
+ * Sem essas linhas o topo mantém a foto base — o CSS não sabe se um ficheiro
+ * existe, e uma imagem em falta deixaria o topo em branco a meio da reserva.
+ * Formato: panorâmica, ver img/servicos/LEIA-ME.md.
  */
-.svc .ic{
-  background-image:var(--pic, none);
-  background-size:cover; background-position:center;
+.hero::after{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background-image:
+    linear-gradient(180deg, rgba(11,14,19,.30) 0%, rgba(11,14,19,.20) 26%,
+                            rgba(11,14,19,.72) 68%, var(--bg) 100%),
+    var(--svc-pic, none);
+  background-size:cover, cover;
+  background-position:center, center 50%;
+  background-repeat:no-repeat;
+  opacity:0; transition:opacity .5s var(--ease);
 }
-.svc .ic::before{opacity:var(--ic-op, 1)}
-/* com foto, o mosaico ganha contorno em vez de fundo cheio quando escolhido */
-.svc[aria-pressed="true"] .ic[style*="--pic"],
-.svc[aria-pressed="true"] .ic{box-shadow:inset 0 0 0 2px rgba(255,194,51,.55)}
+.hero[data-svc="ocasional"]{--svc-pic:url(img/servicos/ocasional.jpg)}
+.hero[data-svc="ocasional"]::after{opacity:1}
 
 .svc .nm{font-weight:500; letter-spacing:-.015em; line-height:1.25}
 .svc .ds{

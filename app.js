@@ -273,6 +273,10 @@
     Array.prototype.forEach.call($('services').children, function (el) {
       el.setAttribute('aria-pressed', el === btn ? 'true' : 'false');
     });
+    // o topo troca para a fotografia deste serviço (o CSS trata do fade;
+    // sem imagem definida para a chave, fica a foto base)
+    var hero = $('hero');
+    if (hero) hero.setAttribute('data-svc', s.key);
     // ida/volta: se só um for permitido, fica escolhido sem perguntar
     TRIP = s.allows_one_way ? 'one_way' : 'round_trip';
     if (KIND === 'school') TRIP = 'round_trip';
