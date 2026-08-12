@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>BorregaVeloz · 3 propostas de desenho</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Montserrat:wght@500;600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════ moldura da comparação ══════════════════════ */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:#0f1216; color:#e9eef5;
+  font:400 16px/1.5 Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.top{
+  position:sticky; top:0; z-index:100;
+  background:rgba(15,18,22,.93); backdrop-filter:blur(14px);
+  border-bottom:1px solid #232a33;
+  padding:14px 16px calc(14px + env(safe-area-inset-top));
+}
+.top h1{margin:0 0 3px; font-size:17px; font-weight:700; letter-spacing:-.02em}
+.top p{margin:0 0 12px; font-size:13px; color:#8e9cb0}
+.tabs{display:flex; gap:8px}
+.tabs a{
+  flex:1; text-align:center; padding:11px 6px; border-radius:11px;
+  background:#1a2029; border:1px solid #2b333e; color:#c8d3e2;
+  text-decoration:none; font-size:13.5px; font-weight:600;
+}
+.tabs a b{display:block; font-size:11px; font-weight:500; color:#7b8899; margin-top:2px}
+
+.wrap{max-width:1400px; margin:0 auto; padding:26px 16px 80px}
+.grid{display:grid; gap:44px}
+@media (min-width:1180px){ .grid{grid-template-columns:repeat(3,1fr); gap:26px} }
+
+.item{scroll-margin-top:140px}
+.cap{margin:0 0 14px}
+.cap .badge{
+  display:inline-block; padding:4px 11px; border-radius:999px;
+  background:#ffc233; color:#1a1200; font-size:12px; font-weight:800; letter-spacing:.06em;
+}
+.cap h2{margin:9px 0 4px; font-size:20px; font-weight:700; letter-spacing:-.02em}
+.cap p{margin:0; font-size:13.5px; color:#8e9cb0; line-height:1.5}
+
+/* telemóvel */
+.phone{
+  width:100%; max-width:390px; margin:0 auto;
+  border-radius:42px; padding:11px;
+  background:linear-gradient(160deg,#2b323d,#171c23);
+  box-shadow:0 30px 70px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.screen{
+  position:relative; height:720px; overflow-y:auto; overflow-x:hidden;
+  border-radius:32px; background:#fff;
+  -webkit-overflow-scrolling:touch;
+}
+.screen::-webkit-scrollbar{width:0}
+.notch{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:112px; height:26px; background:#12161c; border-radius:0 0 15px 15px; z-index:30;
+}
+
+/* ═════════════════════════ A · NOITE (gradient dark) ═══════════════════ */
+.vA{background:#0c1016; color:#eaf0f8; font-family:Poppins,sans-serif; min-height:100%}
+.vA .hero{
+  position:relative; height:250px; padding:56px 22px 0;
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgba(255,194,51,.30), transparent 62%),
+    radial-gradient(110% 80% at 95% 25%, rgba(255,138,0,.22), transparent 60%),
+    linear-gradient(170deg,#20293a 0%, #121822 60%, #0c1016 100%);
+}
+.vA .hero::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:110px;
+  background:linear-gradient(180deg, transparent, #0c1016);
+}
+.vA .hero .road{
+  position:absolute; inset:0; opacity:.16;
+  background:
+    repeating-linear-gradient(115deg, transparent 0 26px, rgba(255,255,255,.5) 26px 28px),
+    repeating-linear-gradient(-40deg, transparent 0 42px, rgba(255,255,255,.32) 42px 43px);
+}
+.vA .brand{display:flex; align-items:center; gap:11px; position:relative; z-index:2}
+.vA .brand img{width:40px; height:40px; border-radius:12px}
+.vA .brand span{font-size:13px; font-weight:600; letter-spacing:.16em; opacity:.75}
+.vA h1{
+  position:relative; z-index:2; margin:22px 0 6px;
+  font-size:33px; font-weight:700; line-height:1.12; letter-spacing:-.035em;
+}
+.vA .sub{position:relative; z-index:2; margin:0; font-size:14.5px; color:#93a3ba}
+.vA .body{padding:6px 22px 130px; position:relative; z-index:3}
+.vA .lbl{
+  margin:26px 0 12px; font-size:11.5px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:#66768d;
+}
+.vA .svc{
+  display:flex; align-items:center; gap:14px; padding:15px;
+  border-radius:20px; margin-bottom:10px;
+  background:#151b25; border:1px solid #232c3a;
+}
+.vA .svc .ic{
+  width:48px; height:48px; border-radius:15px; flex:none;
+  display:grid; place-items:center; font-size:23px; background:#1e2734;
+}
+.vA .svc .t{font-size:15.5px; font-weight:600; letter-spacing:-.01em}
+.vA .svc .d{font-size:12.5px; color:#8496ad; margin-top:2px}
+.vA .svc.on{
+  background:linear-gradient(150deg, rgba(255,194,51,.16), rgba(255,194,51,.04)) #151b25;
+  border-color:#ffc233;
+}
+.vA .svc.on .ic{background:linear-gradient(150deg,#ffc233,#f59e0b); color:#1a1200}
+.vA .svc .tick{
+  margin-left:auto; width:25px; height:25px; border-radius:50%; flex:none;
+  background:linear-gradient(150deg,#ffc233,#f59e0b); color:#1a1200;
+  display:grid; place-items:center; font-size:13px; font-weight:800;
+}
+.vA .fld{margin-bottom:12px}
+.vA .fld .cap2{font-size:12px; color:#8496ad; margin-bottom:7px; font-weight:500}
+.vA .inp{
+  display:flex; align-items:center; gap:12px; padding:16px;
+  border-radius:18px; background:#151b25; border:1px solid #232c3a; font-size:15px;
+}
+.vA .inp .pin{font-size:17px}
+.vA .inp.on{border-color:#ffc233; background:#1a212c}
+.vA .inp .ph{color:#5d6c81}
+.vA .two{display:flex; gap:11px}
+.vA .two .fld{flex:1; margin-bottom:12px}
+.vA .bar{
+  position:sticky; bottom:0; margin:22px -22px -130px;
+  display:flex; align-items:center; gap:14px; padding:18px 22px 26px;
+  background:linear-gradient(180deg, rgba(12,16,22,.6), #0c1016 42%);
+}
+.vA .bar .p1{font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#66768d}
+.vA .bar .p2{
+  font-size:31px; font-weight:700; letter-spacing:-.04em; line-height:1.05;
+  background:linear-gradient(92deg,#ffc233,#ffe6a3);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.vA .bar .p3{font-size:11.5px; color:#8496ad; margin-top:2px}
+.vA .go{
+  margin-left:auto; padding:17px 30px; border-radius:999px; border:0;
+  background:linear-gradient(150deg,#ffc233,#f59e0b); color:#1a1200;
+  font:700 16px Poppins,sans-serif; box-shadow:0 12px 30px rgba(255,194,51,.3);
+}
+
+/* ═════════════════════════ B · TÁXI (amarelo + marinho) ════════════════ */
+.vB{background:#0a1826; color:#fff; font-family:Montserrat,sans-serif; min-height:100%}
+.vB .map{position:relative; height:232px; background:#e8ebee; overflow:hidden}
+.vB .map .blk{position:absolute; background:#d3d8de; border-radius:3px}
+.vB .map .grn{position:absolute; background:#bcd9a8; border-radius:4px}
+.vB .map .rd{position:absolute; background:#fff}
+.vB .map .car{position:absolute; width:24px; height:13px; background:#ffc233; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,.28)}
+.vB .map .tag{
+  position:absolute; padding:6px 11px; border-radius:7px; background:#0a1826;
+  color:#fff; font-size:10.5px; font-weight:700; letter-spacing:.06em; white-space:nowrap;
+}
+.vB .map .tag::after{
+  content:""; position:absolute; left:50%; bottom:-16px; width:1.5px; height:16px; background:#0a1826;
+}
+.vB .map .dot{position:absolute; width:11px; height:11px; border-radius:50%; background:#0a1826}
+.vB .checker{
+  height:17px;
+  background:
+    repeating-linear-gradient(90deg,#0a1826 0 15px, transparent 15px 30px) 0 0/30px 8.5px,
+    repeating-linear-gradient(90deg,transparent 0 15px,#0a1826 15px 30px) 0 8.5px/30px 8.5px,
+    #ffc233;
+  background-repeat:repeat-x;
+}
+.vB .band{background:#ffc233; color:#0a1826; padding:13px 20px; display:flex; align-items:center; gap:13px}
+.vB .band img{width:34px; height:34px; border-radius:9px}
+.vB .band .n1{font-size:19px; font-weight:900; letter-spacing:-.02em; line-height:1}
+.vB .band .n2{font-size:10.5px; font-weight:600; letter-spacing:.1em; margin-top:3px; opacity:.72}
+.vB .body{padding:20px 20px 130px}
+.vB .ttl{
+  text-align:center; font-size:12.5px; font-weight:800;
+  letter-spacing:.24em; text-transform:uppercase; color:#7f93a8; margin:0 0 16px;
+}
+.vB .svc{
+  display:flex; align-items:center; gap:13px; padding:13px 15px;
+  background:#0f2436; border-radius:11px; margin-bottom:9px; border:2px solid transparent;
+}
+.vB .svc .ic{width:42px; height:42px; border-radius:9px; background:#173248; display:grid; place-items:center; font-size:21px; flex:none}
+.vB .svc .t{font-size:14.5px; font-weight:700; letter-spacing:.01em}
+.vB .svc .d{font-size:11.5px; color:#7f93a8; margin-top:2px; font-weight:500}
+.vB .svc.on{border-color:#ffc233; background:#122c42}
+.vB .svc.on .ic{background:#ffc233; color:#0a1826}
+.vB .row{
+  display:flex; align-items:stretch; background:#fff; border-radius:11px;
+  overflow:hidden; margin-bottom:10px;
+}
+.vB .row .k{
+  width:78px; flex:none; display:grid; place-items:center;
+  font-size:11px; font-weight:800; letter-spacing:.1em; color:#8c97a3;
+  border-right:1.5px solid #e4e8ec;
+}
+.vB .row .v{padding:15px 14px; font-size:14px; font-weight:700; color:#0a1826; letter-spacing:.01em}
+.vB .row.out{background:transparent; border:2px solid #ffc233}
+.vB .row.out .k{color:#ffc233; border-right-color:rgba(255,194,51,.35)}
+.vB .row.out .v{color:#fff}
+.vB .two{display:flex; gap:10px; margin-bottom:10px}
+.vB .two .row{flex:1; margin:0}
+.vB .two .row .k{width:56px; font-size:10px}
+.vB .price{
+  display:flex; align-items:center; gap:16px; margin-top:18px;
+  background:#0f2436; border-radius:11px; padding:16px 18px;
+}
+.vB .price .lg{flex:1}
+.vB .price .l1{font-size:10.5px; font-weight:800; letter-spacing:.16em; color:#7f93a8}
+.vB .price .l2{font-size:13px; font-weight:600; color:#cfdae6; margin-top:5px}
+.vB .price .amt{text-align:right}
+.vB .price .amt .e{font-size:12px; font-weight:700; color:#ffc233; vertical-align:top}
+.vB .price .amt .n{font-size:33px; font-weight:900; color:#ffc233; letter-spacing:-.03em; line-height:1}
+.vB .bar{
+  position:sticky; bottom:0; margin:0 -20px -130px; padding:16px 20px 24px;
+  background:linear-gradient(180deg,rgba(10,24,38,.55),#0a1826 40%);
+}
+.vB .go{
+  width:100%; padding:17px; border:0; border-radius:999px;
+  background:#ffc233; color:#0a1826;
+  font:900 15px Montserrat,sans-serif; letter-spacing:.14em; text-transform:uppercase;
+  box-shadow:0 10px 26px rgba(255,194,51,.26);
+}
+.vB .footchk{margin:0 -20px -130px}
+
+/* ═════════════════════════ C · CLARO (travel booking) ══════════════════ */
+.vC{background:#f4f6f9; color:#132030; font-family:Roboto,sans-serif; min-height:100%}
+.vC .hero{
+  padding:52px 22px 62px; position:relative; color:#fff;
+  background:linear-gradient(155deg,#1c2c40 0%, #24384f 55%, #2c435e 100%);
+  border-radius:0 0 30px 30px;
+}
+.vC .hero::before{
+  content:""; position:absolute; inset:0; border-radius:0 0 30px 30px; opacity:.5;
+  background:radial-gradient(90% 70% at 88% 8%, rgba(255,194,51,.34), transparent 60%);
+}
+.vC .hero .in{position:relative; z-index:2}
+.vC .hero .b{display:flex; align-items:center; gap:11px; margin-bottom:20px}
+.vC .hero .b img{width:38px; height:38px; border-radius:11px}
+.vC .hero .b span{font-size:12.5px; font-weight:500; letter-spacing:.14em; opacity:.8}
+.vC .hero h1{margin:0; font-size:26px; font-weight:700; letter-spacing:-.02em; line-height:1.2; font-family:Poppins,sans-serif}
+.vC .hero p{margin:6px 0 0; font-size:13.5px; opacity:.72}
+.vC .body{padding:0 16px 130px; margin-top:-42px; position:relative; z-index:5}
+.vC .card{
+  background:#fff; border-radius:19px; padding:17px;
+  box-shadow:0 5px 22px rgba(19,32,48,.10); margin-bottom:14px;
+}
+.vC .h{
+  margin:0 0 14px; font-size:14.5px; font-weight:700; color:#132030;
+  font-family:Poppins,sans-serif; letter-spacing:-.01em;
+}
+.vC .tiles{display:grid; grid-template-columns:repeat(4,1fr); gap:9px}
+.vC .tile{
+  text-align:center; padding:13px 5px; border-radius:14px;
+  background:#f4f6f9; border:2px solid transparent;
+}
+.vC .tile .ic{
+  width:42px; height:42px; margin:0 auto 7px; border-radius:13px;
+  background:#fff; display:grid; place-items:center; font-size:20px;
+  box-shadow:0 2px 8px rgba(19,32,48,.09);
+}
+.vC .tile .t{font-size:10.5px; font-weight:500; color:#5d6b7c; line-height:1.25}
+.vC .tile.on{background:#fff8e6; border-color:#ffc233}
+.vC .tile.on .ic{background:linear-gradient(150deg,#ffc233,#f59e0b)}
+.vC .tile.on .t{color:#132030; font-weight:700}
+.vC .swap{position:relative}
+.vC .ln{
+  display:flex; align-items:center; gap:12px; padding:14px 13px;
+  background:#f4f6f9; border-radius:13px; margin-bottom:9px;
+}
+.vC .ln .dot{width:10px; height:10px; border-radius:50%; flex:none; background:#ffc233}
+.vC .ln .dot.b{background:#132030; border-radius:2px}
+.vC .ln .tx{min-width:0}
+.vC .ln .k{font-size:10.5px; color:#8994a3; font-weight:500; letter-spacing:.05em}
+.vC .ln .v{font-size:14px; font-weight:500; color:#132030; margin-top:2px}
+.vC .ln .v.ph{color:#a9b3c0}
+.vC .swapb{
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  width:38px; height:38px; border-radius:50%; background:#fff; border:0;
+  box-shadow:0 3px 12px rgba(19,32,48,.16); font-size:15px; color:#132030;
+}
+.vC .two{display:flex; gap:10px}
+.vC .two>div{flex:1; min-width:0}
+.vC .fi{
+  padding:13px; border-radius:13px; background:#f4f6f9;
+}
+.vC .fi .k{font-size:10.5px; color:#8994a3; font-weight:500}
+.vC .fi .v{font-size:14.5px; font-weight:700; color:#132030; margin-top:3px; font-family:Poppins,sans-serif}
+.vC .chips{display:flex; gap:7px; margin-top:11px}
+.vC .chip{
+  flex:1; text-align:center; padding:10px 0; border-radius:11px;
+  background:#f4f6f9; font-size:12.5px; font-weight:500; color:#5d6b7c;
+}
+.vC .chip.on{background:#132030; color:#fff; font-weight:700}
+.vC .bar{
+  position:sticky; bottom:0; margin:0 -16px -130px; padding:14px 16px 22px;
+  background:linear-gradient(180deg,rgba(244,246,249,.4),#f4f6f9 38%);
+  display:flex; align-items:center; gap:13px;
+}
+.vC .bar .pw{flex:1}
+.vC .bar .p1{font-size:10.5px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:#8994a3}
+.vC .bar .p2{font-size:28px; font-weight:700; letter-spacing:-.03em; color:#132030; font-family:Poppins,sans-serif; line-height:1.1}
+.vC .bar .p3{font-size:11.5px; color:#8994a3}
+.vC .go{
+  padding:16px 30px; border:0; border-radius:15px;
+  background:linear-gradient(150deg,#ffc233,#f59e0b); color:#1a1200;
+  font:700 15.5px Poppins,sans-serif; box-shadow:0 8px 22px rgba(255,194,51,.34);
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <h1>BorregaVeloz · 3 propostas de desenho</h1>
+  <p>O mesmo ecrã de reserva nas três linguagens. Diz-me qual seguimos.</p>
+  <div class="tabs">
+    <a href="#a">A <b>Noite</b></a>
+    <a href="#b">B <b>Táxi</b></a>
+    <a href="#c">C <b>Claro</b></a>
+  </div>
+</div>
+
+<div class="wrap"><div class="grid">
+
+<!-- ─────────────────────────────── A ─────────────────────────────── -->
+<div class="item" id="a">
+  <div class="cap">
+    <span class="badge">A · NOITE</span>
+    <h2>Escuro com gradiente</h2>
+    <p>Do <i>Gradient Dark Mode</i>: topo a sangrar com desvanecimento, tipografia Poppins grande, cartões muito arredondados e botão-pílula com gradiente. Elegante e premium.</p>
+  </div>
+  <div class="phone"><div class="screen"><div class="notch"></div>
+    <div class="vA">
+      <div class="hero">
+        <div class="road"></div>
+        <div class="brand">
+          <img src="https://borregaveloz.github.io/termos/img/logo_w.jpg" alt="">
+          <span>BORREGAVELOZ</span>
+        </div>
+        <h1>Para onde<br>vamos, Samuel?</h1>
+        <p class="sub">Reserve em menos de um minuto.</p>
+      </div>
+      <div class="body">
+        <div class="lbl">Serviço</div>
+        <div class="svc on">
+          <div class="ic">🚖</div>
+          <div><div class="t">Transporte Ocasional</div><div class="d">Uma viagem, quando precisar</div></div>
+          <div class="tick">✓</div>
+        </div>
+        <div class="svc"><div class="ic">🔁</div><div><div class="t">Regular Porta-a-porta</div><div class="d">Todas as semanas, à mesma hora</div></div></div>
+        <div class="svc"><div class="ic">🎒</div><div><div class="t">Transporte Escolar</div><div class="d">Levar e trazer da escola</div></div></div>
+        <div class="svc"><div class="ic">🕴️</div><div><div class="t">Motorista Privado</div><div class="d">Ao seu dispor, à hora</div></div></div>
+
+        <div class="lbl">Percurso</div>
+        <div class="fld"><div class="cap2">Origem</div>
+          <div class="inp on"><span class="pin">📍</span><span>Rua Serpa Pinto 14, Santarém</span></div></div>
+        <div class="fld"><div class="cap2">Destino</div>
+          <div class="inp"><span class="pin">🏁</span><span class="ph">Para onde vai?</span></div></div>
+
+        <div class="lbl">Quando</div>
+        <div class="two">
+          <div class="fld"><div class="cap2">Data</div><div class="inp">20 ago 2026</div></div>
+          <div class="fld"><div class="cap2">Hora</div><div class="inp">08:00</div></div>
+        </div>
+
+        <div class="bar">
+          <div>
+            <div class="p1">Valor</div>
+            <div class="p2">107,69 €</div>
+            <div class="p3">160 km · hora de ponta</div>
+          </div>
+          <button class="go">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ─────────────────────────────── B ─────────────────────────────── -->
+<div class="item" id="b">
+  <div class="cap">
+    <span class="badge">B · TÁXI</span>
+    <h2>Amarelo e azul-marinho</h2>
+    <p>Do <i>Taxi App</i>: faixa axadrezada, mapa em cima e painel em baixo, Montserrat pesada, campos brancos DE/PARA. É o que mais se parece com o negócio.</p>
+  </div>
+  <div class="phone"><div class="screen"><div class="notch"></div>
+    <div class="vB">
+      <div class="map">
+        <div class="blk" style="left:8px;top:26px;width:70px;height:52px"></div>
+        <div class="blk" style="left:96px;top:16px;width:54px;height:44px"></div>
+        <div class="grn" style="left:150px;top:78px;width:88px;height:58px"></div>
+        <div class="blk" style="left:26px;top:104px;width:60px;height:70px"></div>
+        <div class="blk" style="left:250px;top:34px;width:76px;height:60px"></div>
+        <div class="grn" style="left:16px;top:190px;width:64px;height:36px"></div>
+        <div class="blk" style="left:108px;top:160px;width:74px;height:56px"></div>
+        <div class="blk" style="left:256px;top:150px;width:66px;height:64px"></div>
+        <div class="rd" style="left:0;top:88px;width:100%;height:13px"></div>
+        <div class="rd" style="left:88px;top:0;width:12px;height:100%"></div>
+        <div class="rd" style="left:238px;top:0;width:11px;height:100%"></div>
+        <div class="rd" style="left:0;top:176px;width:100%;height:11px"></div>
+        <div class="car" style="left:196px;top:90px"></div>
+        <div class="car" style="left:62px;top:178px;transform:rotate(90deg)"></div>
+        <div class="tag" style="left:104px;top:104px">RUA SERPA PINTO 14</div>
+        <div class="dot" style="left:167px;top:136px"></div>
+      </div>
+      <div class="checker"></div>
+      <div class="band">
+        <img src="https://borregaveloz.github.io/termos/img/logo_w.jpg" alt="">
+        <div><div class="n1">BORREGA<i>VELOZ</i></div><div class="n2">A SUA VIAGEM</div></div>
+      </div>
+      <div class="checker"></div>
+      <div class="body">
+        <p class="ttl">Escolha o serviço</p>
+        <div class="svc on"><div class="ic">🚖</div><div><div class="t">TRANSPORTE OCASIONAL</div><div class="d">Uma viagem, quando precisar</div></div></div>
+        <div class="svc"><div class="ic">🔁</div><div><div class="t">REGULAR PORTA-A-PORTA</div><div class="d">Todas as semanas</div></div></div>
+        <div class="svc"><div class="ic">🎒</div><div><div class="t">TRANSPORTE ESCOLAR</div><div class="d">Levar e trazer da escola</div></div></div>
+        <div class="svc"><div class="ic">🕴️</div><div><div class="t">MOTORISTA PRIVADO</div><div class="d">Ao seu dispor, à hora</div></div></div>
+
+        <p class="ttl" style="margin-top:22px">A sua viagem</p>
+        <div class="row"><div class="k">DE</div><div class="v">RUA SERPA PINTO 14</div></div>
+        <div class="row out"><div class="k">PARA</div><div class="v">AEROPORTO DE LISBOA</div></div>
+        <div class="two">
+          <div class="row"><div class="k">DIA</div><div class="v">20 AGO</div></div>
+          <div class="row"><div class="k">HORA</div><div class="v">08:00</div></div>
+        </div>
+
+        <div class="price">
+          <div class="lg">
+            <div class="l1">PREÇO</div>
+            <div class="l2">160 km · hora de ponta<br>30 min de espera</div>
+          </div>
+          <div class="amt"><span class="n">107</span><span class="e">,69 €</span></div>
+        </div>
+
+        <div class="bar"><button class="go">Confirmar reserva</button></div>
+        <div class="footchk"><div class="checker"></div></div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ─────────────────────────────── C ─────────────────────────────── -->
+<div class="item" id="c">
+  <div class="cap">
+    <span class="badge">C · CLARO</span>
+    <h2>Claro e arejado</h2>
+    <p>Do <i>Travel Booking</i>: fundo claro, cartões brancos com sombra suave, grelha de ícones para o serviço e linha origem/destino com botão de trocar. O mais parecido com apps de reserva atuais.</p>
+  </div>
+  <div class="phone"><div class="screen"><div class="notch"></div>
+    <div class="vC">
+      <div class="hero"><div class="in">
+        <div class="b"><img src="https://borregaveloz.github.io/termos/img/logo_w.jpg" alt=""><span>BORREGAVELOZ</span></div>
+        <h1>Olá, Samuel 👋</h1>
+        <p>Onde o levamos hoje?</p>
+      </div></div>
+      <div class="body">
+        <div class="card">
+          <h3 class="h">Serviço</h3>
+          <div class="tiles">
+            <div class="tile on"><div class="ic">🚖</div><div class="t">Ocasional</div></div>
+            <div class="tile"><div class="ic">🔁</div><div class="t">Regular</div></div>
+            <div class="tile"><div class="ic">🎒</div><div class="t">Escolar</div></div>
+            <div class="tile"><div class="ic">🕴️</div><div class="t">Privado</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="h">Percurso</h3>
+          <div class="swap">
+            <div class="ln"><span class="dot"></span><div class="tx"><div class="k">ORIGEM</div><div class="v">Rua Serpa Pinto 14, Santarém</div></div></div>
+            <div class="ln" style="margin-bottom:0"><span class="dot b"></span><div class="tx"><div class="k">DESTINO</div><div class="v">Aeroporto de Lisboa</div></div></div>
+            <button class="swapb">⇅</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="h">Quando</h3>
+          <div class="two">
+            <div class="fi"><div class="k">DATA</div><div class="v">20 ago 2026</div></div>
+            <div class="fi"><div class="k">HORA</div><div class="v">08:00</div></div>
+          </div>
+          <div class="chips">
+            <div class="chip on">Só ida</div>
+            <div class="chip">Ida e volta</div>
+          </div>
+        </div>
+
+        <div class="bar">
+          <div class="pw">
+            <div class="p1">Total</div>
+            <div class="p2">107,69 €</div>
+            <div class="p3">160 km · hora de ponta</div>
+          </div>
+          <button class="go">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div></div>
+</div>
+
+</div></div>
+</body>
+</html>
