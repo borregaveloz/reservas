@@ -225,9 +225,17 @@
       BOOT = d;
       $('gate').hidden = true;
       $('app').hidden = false;
-      $('hello').textContent = d.client.first_name
-        ? ('Olá, ' + d.client.first_name + '! Preencha abaixo — leva menos de um minuto.')
-        : 'Preencha abaixo — leva menos de um minuto.';
+      var ht = $('heroTitle');   // só existe no desenho com foto no topo
+      if (ht) {
+        ht.textContent = d.client.first_name
+          ? ('Para onde vamos, ' + d.client.first_name + '?')
+          : 'Para onde vamos?';
+        $('hello').textContent = 'Reserve em menos de um minuto.';
+      } else {
+        $('hello').textContent = d.client.first_name
+          ? ('Olá, ' + d.client.first_name + '! Preencha abaixo — leva menos de um minuto.')
+          : 'Preencha abaixo — leva menos de um minuto.';
+      }
       renderServices();
     }).catch(function () {
       fail('Não foi possível abrir a sua reserva. Verifique a ligação à internet e tente de novo.');
@@ -236,7 +244,6 @@
 
   /* ------------------------------------------------------------ serviços */
 
-  var ICONS = { ocasional: '🚖', regular: '🔁', escolar: '🎒', privado: '🕴️', partilhado: '👥' };
   var DESCS = {
     ocasional: 'Uma viagem, na data e hora que escolher',
     regular: 'Todas as semanas, nos mesmos dias e horas',
@@ -251,7 +258,9 @@
     (BOOT.services || []).forEach(function (s) {
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'svc'; b.setAttribute('aria-pressed', 'false');
-      b.innerHTML = '<span class="ic">' + (ICONS[s.key] || '🚗') + '</span>' +
+      // o ícone é desenhado pelo CSS (mask SVG) a partir do data-svc: assim é
+      // monocromático em traço e herda a cor, em vez de um emoji de sistema
+      b.innerHTML = '<span class="ic" data-svc="' + s.key + '"></span>' +
         '<span class="nm">' + s.name + '<span class="ds">' + (DESCS[s.key] || '') + '</span></span>';
       b.addEventListener('click', function () { chooseService(s, b); });
       box.appendChild(b);
