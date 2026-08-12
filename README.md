@@ -36,9 +36,12 @@ dentro é um token de sessão válido, que dura 3 horas.
 | | |
 |---|---|
 | `index.html` | estrutura do formulário |
-| `styles.css` | tema escuro, mobile-first |
+| `styles.css` | desenho "A · Noite": topo com foto, Poppins, ícones em traço |
 | `app.js` | lógica: sessão, moradas, orçamento, submissão |
 | `config.js` | URLs e chaves públicas |
+| `icons/` | 15 ícones monocromáticos em traço, aplicados por CSS mask |
+| `img/hero.jpg` | fotografia do topo |
+| `img/servicos/` | imagem opcional por serviço (ver LEIA-ME lá dentro) |
 
 ## Moradas
 

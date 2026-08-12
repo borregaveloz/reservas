@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0e1116">
+<meta name="theme-color" content="#0b0e13">
 <title>Reservar viagem · BorregaVeloz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,10 +23,14 @@
 
 <main id="app" hidden>
 
-  <header class="hdr">
-    <img class="hdr-logo" src="" alt="" id="hdrLogo">
-    <div>
-      <h1>Reservar viagem</h1>
+  <!-- topo com fotografia a sangrar e desvanecimento para o fundo -->
+  <header class="hero">
+    <div class="hero-in">
+      <div class="brand">
+        <img src="" alt="" id="hdrLogo">
+        <span>BORREGAVELOZ</span>
+      </div>
+      <h1 id="heroTitle">Para onde vamos?</h1>
       <p id="hello" class="hdr-sub"></p>
     </div>
   </header>
@@ -40,7 +47,7 @@
     <section class="card" id="secTrip" hidden>
       <h2><span class="n">2</span> Como quer viajar?</h2>
       <div class="seg" id="tripSeg">
-        <button type="button" data-v="one_way"   class="seg-b">Só ida</button>
+        <button type="button" data-v="one_way"    class="seg-b">Só ida</button>
         <button type="button" data-v="round_trip" class="seg-b">Ida e volta</button>
       </div>
       <label class="fld" id="fldWait" hidden>
@@ -103,7 +110,6 @@
     <section class="card" id="secWhen" hidden>
       <h2><span class="n" id="nWhen">4</span> Quando?</h2>
 
-      <!-- viagem pontual -->
       <div id="whenOnce">
         <div class="row">
           <label class="fld"><span>Data</span><input type="date" id="date"></label>
@@ -115,7 +121,6 @@
         </label>
       </div>
 
-      <!-- subscrições -->
       <div id="whenSub" hidden>
         <div class="fld">
           <span>Em que dias da semana?</span>
@@ -183,7 +188,7 @@
 <!-- ecrã final -->
 <div id="done" class="gate" hidden>
   <img class="gate-logo done-logo" src="" alt="" id="doneLogo">
-  <div class="done-tick">✓</div>
+  <div class="done-tick"></div>
   <h2 id="doneTitle"></h2>
   <p id="doneMsg"></p>
   <div class="code-box" id="doneCode" hidden></div>
