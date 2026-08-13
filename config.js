@@ -7,11 +7,12 @@
 window.CFG = {
   SUPABASE_URL: 'https://trtkqjgzmtzgplkaerar.supabase.co',
   SUPABASE_KEY: 'sb_publishable_LBQm2m3BYnAhM19snQUZFQ_Swg4-OMI',
-  // POR PREENCHER. A chave que existe hoje aceita pedidos de qualquer domínio
-  // (testado: passa até sem cabeçalho Referer), e este repositório é público.
-  // Só a meter aqui depois de Application restrictions -> Websites estar mesmo
-  // a recusar outras origens.
-  GOOGLE_KEY:   '',
+  // Restrita a https://borregaveloz.github.io/* (Websites) e à Places API (New).
+  // Verificado a 13-08-2026: pedidos de outro domínio, sem Referer, ou a outra
+  // API da Google respondem 403. É chave de browser e só serve para esta página
+  // — não a reutilizar em chamadas de servidor, que a Google recusa qualquer
+  // chave com restrição por referrer (ver README).
+  GOOGLE_KEY:   'AIzaSyDw8PDYOYpKVunKhpTctcAFEAOXL0eulPs',
   WHATSAPP:     '351961036101',
   LOGO:         'https://borregaveloz.github.io/termos/img/logo_w.jpg',
   TERMOS:       'https://borregaveloz.github.io/termos/'

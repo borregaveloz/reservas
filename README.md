@@ -49,10 +49,16 @@ Com `GOOGLE_KEY` preenchida usa a **Places API (New)** da Google. Sem chave cai
 automaticamente para o **Photon** (OpenStreetMap), que não precisa de chave mas
 tem menos qualidade em Portugal.
 
-> ⚠️ Só pôr a chave Google aqui depois de ela estar restrita por domínio
-> (*Application restrictions → Websites* → `https://borregaveloz.github.io/*`).
-> Este repositório é público e há bots que o varrem à procura de chaves Google.
-> Para confirmar que a restrição está mesmo activa:
+> ⚠️ Só pôr uma chave Google aqui depois de ela estar restrita por domínio
+> (*Application restrictions → Websites* → `https://borregaveloz.github.io/*`)
+> **e** limitada à Places API (New) em *API restrictions*. Este repositório é
+> público e há bots que o varrem à procura de chaves Google.
+>
+> O domínio vai **sem caminho**: os browsers cortam o path do `Referer`
+> (`strict-origin-when-cross-origin`), por isso `…github.io/reservas/*` bloqueia
+> a própria página.
+>
+> Para confirmar que a restrição está activa:
 >
 > ```bash
 > curl -s -X POST https://places.googleapis.com/v1/places:autocomplete \
@@ -61,7 +67,18 @@ tem menos qualidade em Portugal.
 >   -d '{"input":"Santarem","includedRegionCodes":["pt"]}'
 > ```
 >
-> Tem de responder `REQUEST_DENIED`. Se devolver sugestões, a chave está aberta.
+> Tem de responder **HTTP 403** com `"status": "PERMISSION_DENIED"` e
+> `"reason": "API_KEY_HTTP_REFERRER_BLOCKED"`. (`REQUEST_DENIED` é da Places
+> antiga — procurar essa string dá sempre "não funcionou", mesmo quando
+> funcionou.) Repetir sem cabeçalho `Referer` nenhum: também tem de dar 403.
+> Depois de gravar na consola, esperar ~5 min antes de testar.
+
+> 🔌 **Esta chave não serve para o servidor.** A Geocoding API recusa qualquer
+> chave com restrição por referrer (`"API keys with referer restrictions cannot
+> be used with this API"`), portanto o n8n tem de usar uma chave própria,
+> restrita por IP. Não juntar as duas — restringir a chave do n8n por domínio
+> parte o wizard do chat em silêncio (o `geocodeAddr` engole o erro e devolve
+> reservas sem coordenadas).
 
 ## Serviços
 
