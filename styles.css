@@ -110,7 +110,7 @@ body{
   background-image:
     linear-gradient(180deg, rgba(11,14,19,.30) 0%, rgba(11,14,19,.20) 26%,
                             rgba(11,14,19,.72) 68%, var(--bg) 100%),
-    url("img/hero.jpg"),
+    url("img/hero.webp"),
     radial-gradient(120% 90% at 22% 4%, rgba(255,194,51,.34), transparent 62%),
     linear-gradient(168deg,#22304a 0%,#151d2b 62%,var(--bg) 100%);
   background-size:cover, cover, cover, cover;
@@ -205,14 +205,10 @@ form{
  * É uma segunda camada por cima da foto base que se sobrepõe em fade — o
  * background-image não é animável, por isso a transição faz-se na opacidade.
  *
- * Acrescentar um serviço são duas linhas, sempre juntas:
- *
- *   .hero[data-svc="escolar"]{--svc-pic:url(img/servicos/escolar.jpg)}
- *   .hero[data-svc="escolar"]::after{opacity:1}
- *
- * Sem essas linhas o topo mantém a foto base — o CSS não sabe se um ficheiro
- * existe, e uma imagem em falta deixaria o topo em branco a meio da reserva.
- * Formato: panorâmica, ver img/servicos/LEIA-ME.md.
+ * Não é preciso mexer aqui para acrescentar um serviço: o app.js tenta carregar
+ * `img/servicos/<chave>.webp` e só liga a camada (`--svc-pic` + classe
+ * `has-pic`) se o ficheiro existir mesmo. Largar a imagem na pasta chega.
+ * Sem imagem, o topo mantém a foto base. Formato: ver img/servicos/LEIA-ME.md.
  */
 .hero::after{
   content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
@@ -225,8 +221,7 @@ form{
   background-repeat:no-repeat;
   opacity:0; transition:opacity .5s var(--ease);
 }
-.hero[data-svc="ocasional"]{--svc-pic:url(img/servicos/ocasional.jpg)}
-.hero[data-svc="ocasional"]::after{opacity:1}
+.hero.has-pic::after{opacity:1}
 
 .svc .nm{font-weight:500; letter-spacing:-.015em; line-height:1.25}
 .svc .ds{

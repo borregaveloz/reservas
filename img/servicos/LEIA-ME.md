@@ -1,32 +1,29 @@
 # Fotografias por serviço
 
 Ao escolher um serviço, o **topo da página troca** para a fotografia desse
-serviço, em fade. O nome do ficheiro é a **chave do serviço** em `service_types`:
+serviço, em fade.
+
+**Basta largar o ficheiro nesta pasta.** A página tenta carregá-lo ao arrancar e
+só usa os que existirem — não é preciso mexer no CSS nem no JavaScript. Um
+serviço sem imagem mantém a fotografia base (a estrada de montanha).
+
+O nome é a **chave do serviço** em `service_types`, sempre em `.webp`:
 
 | Ficheiro | Serviço |
 |---|---|
-| `ocasional.jpg` | Transporte Ocasional |
-| `regular.jpg` | Regular Porta-a-porta |
-| `escolar.jpg` | Transporte Escolar |
-| `privado.jpg` | Motorista Privado |
-| `partilhado.jpg` | Transportes Partilhados |
+| `ocasional.webp` | Transporte Ocasional |
+| `regular.webp` | Regular Porta-a-porta |
+| `escolar.webp` | Transporte Escolar |
+| `privado.webp` | Motorista Privado |
+| `partilhado.webp` | Transportes Partilhados |
 
-**Formato:** JPG ou WEBP, **panorâmica** ou retrato — o topo usa `cover`, por
-isso qualquer proporção serve. Recomendado ~1600 px no lado maior. O motivo
-deve estar na **metade superior**: o topo só mostra uma faixa da imagem, e por
-baixo passa um gradiente escuro para o texto se ler.
+**Formato:** WebP, ~1100 px de largura, qualidade 72 (`cwebp -q 72 -m 6`). Manda
+o original em JPG/PNG que a conversão faz-se aqui — 1100 px chega para ecrãs 3×
+e mantém o ficheiro nos ~60 KB, que numa página aberta em dados móveis conta.
 
-Pôr o ficheiro aqui **não basta**: é preciso acrescentar duas linhas em
-`styles.css`, na secção "fotografia por serviço":
+**O motivo deve estar na metade superior.** O topo mostra só uma faixa (~42% da
+altura, centrada a 55%) e por baixo passa um gradiente escuro para o texto se
+ler. Uma fotografia com o assunto em baixo perde-se.
 
-```css
-.hero[data-svc="escolar"]{--svc-pic:url(img/servicos/escolar.jpg)}
-.hero[data-svc="escolar"]::after{opacity:1}
-```
-
-É de propósito. O CSS não sabe se um ficheiro existe, e uma imagem em falta
-deixaria o topo em branco a meio da reserva — pior do que manter a foto base.
-
-> `ocasional.jpg` é provisória: é a primeira fotografia que o proprietário
-> enviou (mão fora da janela), posta aqui para demonstrar a troca a funcionar.
-> Substituir quando houver a definitiva.
+> `ocasional.webp` é provisória: é a primeira fotografia enviada pelo
+> proprietário (mão fora da janela), posta para demonstrar a troca. Substituir.

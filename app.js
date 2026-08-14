@@ -252,9 +252,42 @@
     partilhado: 'Viagem partilhada com outros passageiros'
   };
 
+  /* Fotografia por serviço: ao escolher, o topo troca para a imagem daquele
+   * serviço. Em vez de exigir uma regra de CSS por serviço, tenta-se carregar
+   * `img/servicos/<chave>.webp` — só as que existirem entram no mapa. Assim
+   * acrescentar uma imagem é largar o ficheiro na pasta, e uma imagem em falta
+   * nunca deixa o topo em branco a meio da reserva. */
+  var SVC_PIC = {};
+
+  function probeServicePics(keys) {
+    keys.forEach(function (k) {
+      var url = 'img/servicos/' + k + '.webp';
+      var im = new Image();
+      im.onload = function () {
+        SVC_PIC[k] = url;
+        if (SVC && SVC.key === k) applyHeroPic(k);   // já estava escolhido
+      };
+      im.src = url;
+    });
+  }
+
+  function applyHeroPic(key) {
+    var hero = $('hero');
+    if (!hero) return;
+    hero.setAttribute('data-svc', key);
+    if (SVC_PIC[key]) {
+      hero.style.setProperty('--svc-pic', 'url("' + SVC_PIC[key] + '")');
+      hero.classList.add('has-pic');
+    } else {
+      hero.style.removeProperty('--svc-pic');
+      hero.classList.remove('has-pic');
+    }
+  }
+
   function renderServices() {
     var box = $('services');
     box.innerHTML = '';
+    probeServicePics((BOOT.services || []).map(function (s) { return s.key; }));
     (BOOT.services || []).forEach(function (s) {
       var b = document.createElement('button');
       b.type = 'button'; b.className = 'svc'; b.setAttribute('aria-pressed', 'false');
@@ -273,10 +306,7 @@
     Array.prototype.forEach.call($('services').children, function (el) {
       el.setAttribute('aria-pressed', el === btn ? 'true' : 'false');
     });
-    // o topo troca para a fotografia deste serviço (o CSS trata do fade;
-    // sem imagem definida para a chave, fica a foto base)
-    var hero = $('hero');
-    if (hero) hero.setAttribute('data-svc', s.key);
+    applyHeroPic(s.key);
     // ida/volta: se só um for permitido, fica escolhido sem perguntar
     TRIP = s.allows_one_way ? 'one_way' : 'round_trip';
     if (KIND === 'school') TRIP = 'round_trip';
