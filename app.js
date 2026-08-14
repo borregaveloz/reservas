@@ -501,7 +501,11 @@
     if (BUSY) return;
     if (!$('terms').checked) { showErrors([{ message: 'Precisa de aceitar os Termos e Condições.' }]); return; }
     var phone = $('mbway').value.replace(/\D/g, '');
-    if (KIND !== 'school' && BOOT.mbway_enabled && !/^9\d{8}$/.test(phone)) {
+    if (phone.indexOf('351') === 0) phone = phone.slice(3);
+    // Mesma validação da ifthenpay (ifthenpay-sdk-php, Utils/Validation.php:
+    // regex_mobile). Um `^9\d{8}$` deixava passar 94/95/97, que não são gamas
+    // de telemóvel portuguesas: o pedido saía e vinha recusado.
+    if (KIND !== 'school' && BOOT.mbway_enabled && !/^9[123689]\d{7}$/.test(phone)) {
       showErrors([{ message: 'Indique um telemóvel português com MBWAY (9 dígitos).' }]);
       $('mbway').classList.add('bad'); $('mbway').focus();
       return;
