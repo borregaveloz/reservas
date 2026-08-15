@@ -129,11 +129,56 @@
     return USE_GOOGLE ? googleSuggest(text) : photonSuggest(text);
   }
 
+  /* A lista aberta neste momento (só pode haver uma). Reposiciona-se sempre que
+   * a página rola ou o teclado abre/fecha — sendo `position:fixed`, não anda
+   * sozinha com o documento. */
+  var acPlace = null;
+  function acReflow() { if (acPlace) acPlace(); }
+  window.addEventListener('scroll', acReflow, true);
+  window.addEventListener('resize', acReflow);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', acReflow);
+    window.visualViewport.addEventListener('scroll', acReflow);
+  }
+
   /* Liga um input a uma lista de sugestões. onPick recebe {addr,lat,lon}. */
   function attachAutocomplete(input, list, onPick) {
     var timer = null, items = [], sel = -1, lastPicked = '';
 
-    function close() { list.hidden = true; list.innerHTML = ''; items = []; sel = -1; }
+    /* A lista sai do <form> para o <body>. Dentro do form ficava presa ao
+     * stacking context dele (z-index:3) e a barra do preço (z-index:50, irmã
+     * do form) tapava-a sempre — no telemóvel a lista aparecia por trás da
+     * barra e os toques iam parar ao botão Confirmar. */
+    document.body.appendChild(list);
+
+    /* Ancorada ao input em coordenadas de viewport, e sobe para cima do campo
+     * quando não há espaço por baixo — que é o caso assim que o teclado abre. */
+    function place() {
+      if (list.hidden) return;
+      var vv = window.visualViewport;
+      var vTop = vv ? vv.offsetTop : 0;
+      var vBot = vTop + (vv ? vv.height : window.innerHeight);
+      var r = input.getBoundingClientRect();
+      var gap = 6, edge = 10;
+      var below = vBot - r.bottom - gap - edge;
+      var above = r.top - vTop - gap - edge;
+      var up = below < 132 && above > below;
+
+      list.style.left = r.left + 'px';
+      list.style.width = r.width + 'px';
+      list.style.maxHeight = Math.min(290, Math.max(96, up ? above : below)) + 'px';
+      // o offsetHeight tem de ser lido depois do max-height, senão sobe a mais
+      list.style.top = up
+        ? Math.max(vTop + edge, r.top - gap - list.offsetHeight) + 'px'
+        : (r.bottom + gap) + 'px';
+    }
+
+    function open() { list.hidden = false; acPlace = place; place(); }
+
+    function close() {
+      list.hidden = true; list.innerHTML = ''; items = []; sel = -1;
+      if (acPlace === place) acPlace = null;
+    }
 
     function draw() {
       list.innerHTML = '';
@@ -148,7 +193,7 @@
         li.addEventListener('mousedown', function (e) { e.preventDefault(); pick(i); });
         list.appendChild(li);
       });
-      list.hidden = !items.length;
+      if (items.length) open(); else close();
     }
 
     function pick(i) {
@@ -175,7 +220,7 @@
           items = res; sel = -1;
           if (!items.length) {
             list.innerHTML = '<li class="muted">Sem resultados — tente com mais detalhe.</li>';
-            list.hidden = false;
+            open();
           } else draw();
         });
       }, 320);
@@ -675,12 +720,19 @@
     $('form').addEventListener('submit', function (e) { e.preventDefault(); });
 
     // Com o teclado aberto, a barra fixa do preço tapa metade do ecrã e ainda
-    // esconde o campo que se está a preencher. O visualViewport encolhe quando
-    // o teclado sobe — é o único sinal fiável disto no iOS.
+    // esconde o campo que se está a preencher.
+    //
+    // Comparar `window.innerHeight` com o visualViewport não serve: no Chrome
+    // do Android o teclado encolhe também o layout viewport, os dois valores
+    // descem juntos, a diferença fica ≈0 e a barra nunca se escondia. O que se
+    // compara é a altura visível com a maior já vista nesta orientação.
     if (window.visualViewport) {
       var vv = window.visualViewport;
+      var fullH = vv.height, lastW = window.innerWidth;
       vv.addEventListener('resize', function () {
-        document.body.classList.toggle('kb', (window.innerHeight - vv.height) > 150);
+        if (window.innerWidth !== lastW) { lastW = window.innerWidth; fullH = vv.height; }
+        if (vv.height > fullH) fullH = vv.height;
+        document.body.classList.toggle('kb', (fullH - vv.height) > 150);
       });
     }
   }

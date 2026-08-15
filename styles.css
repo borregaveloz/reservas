@@ -351,14 +351,23 @@ input[type=time]::-webkit-calendar-picker-indicator{
   background:linear-gradient(160deg,var(--acc),var(--acc-2));
 }
 
-/* ═══════════════════════════ sugestões de morada ══════════════════════ */
-
+/* ═══════════════════════════ sugestões de morada ══════════════════════
+ *
+ * A lista vive no <body>, não dentro do .ac-wrap: no form ficava presa ao
+ * stacking context dele (z-index:3) e a barra do preço, que é irmã do form,
+ * tapava-a sempre por muito alto que fosse o z-index cá dentro.
+ *
+ * Por isso é `fixed` e o app.js dá-lhe left/width/top/max-height a partir do
+ * getBoundingClientRect() do campo — incluindo subir para cima do campo
+ * quando o teclado não deixa espaço por baixo.
+ */
 .ac-list{
-  list-style:none; margin:6px 0 0; padding:7px;
-  position:absolute; z-index:40; left:0; right:0;
+  list-style:none; margin:0; padding:7px;
+  position:fixed; z-index:60; left:0; width:100%;
   background:#1e2634; border:1px solid #3a4759; border-radius:var(--r-lg);
   box-shadow:0 20px 50px rgba(0,0,0,.55);
   max-height:290px; overflow:auto; -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   animation:rise .18s var(--ease) both;
 }
 .ac-list li{
