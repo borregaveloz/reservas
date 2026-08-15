@@ -25,5 +25,17 @@ e mantém o ficheiro nos ~60 KB, que numa página aberta em dados móveis conta.
 altura, centrada a 55%) e por baixo passa um gradiente escuro para o texto se
 ler. Uma fotografia com o assunto em baixo perde-se.
 
-> `ocasional.webp` é provisória: é a primeira fotografia enviada pelo
-> proprietário (mão fora da janela), posta para demonstrar a troca. Substituir.
+As quatro em uso desde 15-08-2026, recortadas do original em retrato para uma
+faixa panorâmica centrada no essencial (o topo mostra a imagem quase toda, em
+vez de uma fatia ao calhas). Recortes usados, para se poderem repetir:
+
+| Serviço | Recorte do original |
+|---|---|
+| ocasional | `1200x850+0+300` |
+| regular | `1333x900+0+550` |
+| escolar | `1333x900+0+900` |
+| privado | `842x680+0+90` |
+
+No escolar e no privado o primeiro recorte não servia: a cara da criança ficava
+tão em baixo que o gradiente lhe cobria a boca, e no privado o portátil dominava
+com o motorista minúsculo. Vale a pena simular o gradiente antes de publicar.
