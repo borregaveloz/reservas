@@ -57,6 +57,17 @@
    */
   var USE_GOOGLE = !!(CFG.GOOGLE_KEY && CFG.GOOGLE_KEY.length > 10);
 
+  /* Centro de Santarém, que é onde vive quase toda a procura. As duas fontes
+   * usam-no para inclinar os resultados: sem isto, "Rua Alexandre Herculano 40"
+   * devolvia Lisboa, Ermesinde, Odemira, Odivelas e Caldas da Rainha — cinco
+   * sugestões, nenhuma de Santarém, porque a Google só devolve 5 e o nome
+   * repete-se em meia dúzia de cidades maiores.
+   *
+   * 15 km é o que chega: com 50 km o círculo já engole Lisboa e Santarém volta
+   * a cair da lista. Enviesar não é restringir — aeroporto, Fátima, Oriente e
+   * hospitais de Lisboa continuam a aparecer, porque são procurados pelo nome. */
+  var BIAS = { lat: 39.2362, lon: -8.6870, radius: 15000 };
+
   var placesSession = null;
   function newPlacesSession() {
     placesSession = (crypto.randomUUID ? crypto.randomUUID()
@@ -69,7 +80,13 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': CFG.GOOGLE_KEY },
       body: JSON.stringify({
-        input: text, includedRegionCodes: ['pt'], languageCode: 'pt', sessionToken: placesSession
+        input: text, includedRegionCodes: ['pt'], languageCode: 'pt', sessionToken: placesSession,
+        locationBias: {
+          circle: {
+            center: { latitude: BIAS.lat, longitude: BIAS.lon },
+            radius: BIAS.radius
+          }
+        }
       })
     }).then(function (r) { return r.ok ? r.json() : { suggestions: [] }; })
       .then(function (d) {
@@ -97,8 +114,8 @@
   }
 
   function photonSuggest(text) {
-    // enviesado para Santarém, que é onde vive quase toda a procura
-    var url = 'https://photon.komoot.io/api/?limit=6&lang=default&lat=39.2362&lon=-8.6870&q=' +
+    var url = 'https://photon.komoot.io/api/?limit=6&lang=default' +
+      '&lat=' + BIAS.lat + '&lon=' + BIAS.lon + '&q=' +
       encodeURIComponent(text + ', Portugal');
     return fetch(url).then(function (r) { return r.ok ? r.json() : { features: [] }; })
       .then(function (d) {
