@@ -14,14 +14,27 @@
   var CFG = window.CFG;
   var $ = function (id) { return document.getElementById(id); };
 
-  var TOKEN = (location.hash.match(/[#&]t=([a-f0-9]+)/i) || [])[1] || '';
-  var BOOT = null;      // resposta do session_bootstrap
+  /* Dois links, dois modos. `#t=` abre o formulário de reserva; `#m=` abre a
+   * lista de viagens para cancelar ou alterar. São sessões distintas no
+   * Postgres (booking_sessions.purpose) e uma não serve para o que é da outra:
+   * um token de gestão não cria reservas, um de reserva não cancela nada. */
+  var TOKEN  = (location.hash.match(/[#&]t=([a-f0-9]+)/i) || [])[1] || '';
+  var MTOKEN = (location.hash.match(/[#&]m=([a-f0-9]+)/i) || [])[1] || '';
+  var MODE   = MTOKEN ? 'manage' : 'book';
+
+  var BOOT = null;      // resposta do session_bootstrap / manage_bootstrap
   var SVC = null;       // serviço escolhido
   var KIND = 'once';    // 'once' | 'regular' | 'school'
   var ORIGIN = null, DEST = null, SCHOOL = null;   // {addr, lat, lon}
   var QUOTE = null;
   var VOUCHER = '';
   var BUSY = false;
+
+  /* Reserva que está a ser alterada. Enquanto não for null, o formulário fala
+   * com quote_change/submit_change em vez de quote_booking/submit_booking, e a
+   * barra mostra a diferença em vez do valor. */
+  var ALTER = null;
+  var AC = {};          // handles do autocomplete, para poder semear moradas
 
   var DAYNUM = {
     'Segunda-feira': 1, 'Terca-feira': 2, 'Terça-feira': 2, 'Quarta-feira': 3,
@@ -258,6 +271,18 @@
         if (input.value.trim() && input.value.trim() !== lastPicked) input.classList.add('bad');
       }, 150);
     });
+
+    /* Ao alterar uma reserva as moradas já vêm com coordenadas da base de
+     * dados, por isso não passam pela lista. Sem semear o `lastPicked`, o
+     * primeiro blur marcava o campo como inválido e o cliente via um erro em
+     * cima de uma morada que estava correcta. */
+    return {
+      seed: function (addr) {
+        input.value = addr || '';
+        lastPicked = input.value.trim();
+        input.classList.remove('bad');
+      }
+    };
   }
 
   /* ------------------------------------------------------------ arranque */
@@ -270,20 +295,30 @@
     wa.hidden = false;
   }
 
+  /* O texto do erro tem de dizer o que escrever no WhatsApp, e isso depende do
+   * modo: quem veio gerir escreve "2", quem veio reservar escreve "agendar". */
+  function expired() {
+    return MODE === 'manage'
+      ? fail('O seu link expirou. Volte ao WhatsApp e escolha "Cancelar/Alterar" para receber um novo.')
+      : fail('O seu link expirou. Volte ao WhatsApp e escreva "agendar" para receber um novo.');
+  }
+
   function boot() {
     $('gateLogo').src = CFG.LOGO;
     $('hdrLogo').src = CFG.LOGO;
     $('doneLogo').src = CFG.LOGO;
+    $('mgLogo').src = CFG.LOGO;
     $('termsLink').href = CFG.TERMOS;
+    $('mgWa').href = 'https://wa.me/' + CFG.WHATSAPP;
+
+    if (MODE === 'manage') return bootManage();
 
     if (!TOKEN) {
       return fail('Este link não é válido. Peça um novo no WhatsApp escrevendo "agendar".');
     }
 
     rpc('session_bootstrap', { p_token: TOKEN }).then(function (d) {
-      if (!d || !d.ok) {
-        return fail('O seu link expirou. Volte ao WhatsApp e escreva "agendar" para receber um novo.');
-      }
+      if (!d || !d.ok) return expired();
       BOOT = d;
       $('gate').hidden = true;
       $('app').hidden = false;
@@ -302,6 +337,372 @@
     }).catch(function () {
       fail('Não foi possível abrir a sua reserva. Verifique a ligação à internet e tente de novo.');
     });
+  }
+
+  /* ---------------------------------------------------------------- gestão */
+
+  var DOW = ['', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+
+  /* As datas vêm do Postgres em UTC. Mostrar sempre em Lisboa, senão no Verão
+   * uma recolha às 00:30 aparece no dia anterior. */
+  function fmtWhen(iso) {
+    try {
+      return new Date(iso).toLocaleString('pt-PT', {
+        timeZone: 'Europe/Lisbon', weekday: 'short', day: '2-digit',
+        month: '2-digit', hour: '2-digit', minute: '2-digit'
+      }).replace(',', ' ·');
+    } catch (e) { return String(iso || '').slice(0, 16).replace('T', ' '); }
+  }
+  function fmtDay(iso) {
+    try {
+      return new Date(iso).toLocaleDateString('pt-PT',
+        { timeZone: 'Europe/Lisbon', day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch (e) { return String(iso || '').slice(0, 10); }
+  }
+  function el(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+
+  function bootManage() {
+    if (!MTOKEN) {
+      return fail('Este link não é válido. Volte ao WhatsApp e escolha "Cancelar/Alterar".');
+    }
+    rpc('manage_bootstrap', { p_token: MTOKEN }).then(function (d) {
+      if (!d || !d.ok) return expired();
+      BOOT = d;
+      $('gate').hidden = true;
+      renderManage();
+    }).catch(function () {
+      fail('Não foi possível abrir as suas viagens. Verifique a ligação à internet e tente de novo.');
+    });
+  }
+
+  function renderManage() {
+    $('app').hidden = true;
+    $('done').hidden = true;
+    $('manage').hidden = false;
+
+    var bks = BOOT.bookings || [], subs = BOOT.subscriptions || [];
+    $('mgHello').textContent = BOOT.client.first_name
+      ? ('Olá, ' + BOOT.client.first_name + '! Toque numa viagem para alterar ou cancelar.')
+      : 'Toque numa viagem para alterar ou cancelar.';
+
+    $('mgTrips').hidden = !bks.length;
+    $('mgSubs').hidden = !subs.length;
+    $('mgEmpty').hidden = !!(bks.length || subs.length);
+
+    var tl = $('mgTripList'); tl.innerHTML = '';
+    bks.forEach(function (b) { tl.appendChild(tripCard(b)); });
+
+    var sl = $('mgSubList'); sl.innerHTML = '';
+    subs.forEach(function (s) { sl.appendChild(subCard(s)); });
+  }
+
+  function tripCard(b) {
+    var box = el('div', 'mg-item');
+
+    var top = el('div', 'mg-top');
+    top.appendChild(el('div', 'mg-when', fmtWhen(b.pickup_at)));
+    top.appendChild(el('div', 'mg-code', 'Nº ' + (b.booking_code || '—')));
+    box.appendChild(top);
+
+    var route = el('div', 'mg-route');
+    route.appendChild(el('span', null, b.pickup_address || '—'));
+    if (b.dropoff_address) route.appendChild(el('span', 'to', b.dropoff_address));
+    box.appendChild(route);
+
+    var meta = el('div', 'mg-meta');
+    if (b.service_name) meta.appendChild(el('span', 'mg-tag', b.service_name));
+    if (b.price_estimate != null) meta.appendChild(el('span', 'mg-tag paid', eur(b.price_estimate)));
+    if (b.has_driver) meta.appendChild(el('span', 'mg-tag', 'Motorista atribuído'));
+    var cq = b.cancel_quote || {};
+    if (Number(cq.refund) > 0) {
+      meta.appendChild(el('span', 'mg-tag', 'Devolução ' + eur(cq.refund)));
+    } else {
+      meta.appendChild(el('span', 'mg-tag warn', 'Sem devolução'));
+    }
+    box.appendChild(meta);
+
+    var acts = el('div', 'mg-acts');
+    var alt = el('button', 'btn-sec', 'Alterar');
+    alt.type = 'button';
+    /* Alterar compara o valor novo com o que já foi pago — sem pagamento
+     * confirmado não há com o que comparar, e é a mesma condição que o wizard
+     * do WhatsApp usa. */
+    if (!b.can_alter) {
+      alt.disabled = true;
+      alt.title = 'Só é possível alterar depois de a reserva estar paga.';
+    } else {
+      alt.addEventListener('click', function () { startAlter(b); });
+    }
+    var can = el('button', 'btn-danger', 'Cancelar');
+    can.type = 'button';
+    can.addEventListener('click', function () { askCancelTrip(b); });
+    acts.appendChild(alt); acts.appendChild(can);
+    box.appendChild(acts);
+
+    return box;
+  }
+
+  function subCard(s) {
+    var box = el('div', 'mg-item');
+
+    var top = el('div', 'mg-top');
+    top.appendChild(el('div', 'mg-when',
+      s.sub_type === 'school' ? ('🏫 ' + (s.school_name || 'Transporte Escolar')) : 'Regular porta-a-porta'));
+    top.appendChild(el('div', 'mg-code', (s.sub_code || '—')));
+    box.appendChild(top);
+
+    var dias = (s.days || []).map(function (d) { return DOW[d] || d; }).join(' · ');
+    var horas = [s.time_out, s.time_return].filter(Boolean).join(' / ');
+    var route = el('div', 'mg-route');
+    if (dias || horas) route.appendChild(el('span', null, [dias, horas].filter(Boolean).join('  ·  ')));
+    if (s.origin_address) route.appendChild(el('span', 'to', s.origin_address));
+    box.appendChild(route);
+
+    var meta = el('div', 'mg-meta');
+    meta.appendChild(el('span', 'mg-tag' + (s.status === 'suspended' ? ' warn' : ''),
+      s.status === 'suspended' ? 'Suspensa' : 'Ativa'));
+    if (s.price_week != null) meta.appendChild(el('span', 'mg-tag paid', eur(s.price_week) + '/semana'));
+    if (s.paid_until) meta.appendChild(el('span', 'mg-tag', 'Paga até ' + fmtDay(s.paid_until)));
+    meta.appendChild(el('span', 'mg-tag', s.future_trips + ' viagens futuras'));
+    box.appendChild(meta);
+
+    var acts = el('div', 'mg-acts');
+    var falta = el('button', 'btn-sec', 'Marcar falta');
+    falta.type = 'button';
+    falta.addEventListener('click', function () { askAbsence(s); });
+    var can = el('button', 'btn-danger', 'Cancelar');
+    can.type = 'button';
+    can.addEventListener('click', function () { askCancelSub(s); });
+    acts.appendChild(falta); acts.appendChild(can);
+    box.appendChild(acts);
+
+    return box;
+  }
+
+  /* --------------------------------------------- folha de confirmação */
+
+  var sheetAction = null;
+
+  function openSheet(o) {
+    $('sheetTitle').textContent = o.title;
+    $('sheetBody').innerHTML = '';
+    (o.lines || []).forEach(function (l) {
+      if (l.money) {
+        var m = el('div', 'money');
+        m.appendChild(el('span', null, l.label));
+        var v = document.createElement('b'); v.textContent = l.value; m.appendChild(v);
+        $('sheetBody').appendChild(m);
+      } else {
+        $('sheetBody').appendChild(el('p', null, l.text));
+      }
+    });
+    $('sheetDateFld').hidden = !o.askDate;
+    $('sheetErr').hidden = true;
+    $('sheetYes').textContent = o.yes || 'Confirmar';
+    $('sheetYes').disabled = false;
+    $('sheetYes').className = o.danger ? 'btn-danger' : 'btn-go';
+    sheetAction = o.run;
+    $('sheet').hidden = false;
+  }
+
+  function closeSheet() { $('sheet').hidden = true; sheetAction = null; }
+
+  function sheetError(msg) {
+    var e = $('sheetErr');
+    e.textContent = msg; e.hidden = false;
+    $('sheetYes').disabled = false;
+    $('sheetYes').textContent = 'Tentar de novo';
+  }
+
+  /* --------------------------------------------------------- acções */
+
+  function askCancelTrip(b) {
+    var cq = b.cancel_quote || {};
+    var ref = Number(cq.refund) || 0;
+    openSheet({
+      title: 'Cancelar a viagem Nº ' + (b.booking_code || '—') + '?',
+      danger: true, yes: 'Sim, cancelar',
+      lines: [
+        { text: fmtWhen(b.pickup_at) + ' · ' + (b.dropoff_address || b.pickup_address || '') },
+        ref > 0
+          ? { money: true, label: 'Devolução (' + (cq.tipo || '') + ')', value: eur(ref) }
+          : { text: 'Está fora da janela de devolução, por isso não há lugar a reembolso.' },
+        { text: 'Esta acção não pode ser desfeita.' }
+      ],
+      run: function () {
+        return rpc('cancel_booking_web', { p_token: MTOKEN, p_booking_id: b.id })
+          .then(function (r) {
+            if (!r || !r.ok) throw new Error(errMsg(r));
+            doneScreen('Viagem cancelada',
+              Number(r.refund) > 0
+                ? ('A devolução de ' + eur(r.refund) + ' será enviada para o MBWAY usado no pagamento. ' +
+                   'Enviámos-lhe também a confirmação por WhatsApp.')
+                : 'Enviámos-lhe a confirmação por WhatsApp.',
+              r.booking_code);
+          });
+      }
+    });
+  }
+
+  function askAbsence(s) {
+    var t = new Date(); t.setMinutes(t.getMinutes() - t.getTimezoneOffset());
+    $('sheetDate').min = t.toISOString().slice(0, 10);
+    $('sheetDate').value = '';
+    openSheet({
+      title: 'Marcar falta',
+      askDate: true, yes: 'Marcar falta',
+      lines: [
+        { text: 'Cancelamos as viagens da subscrição ' + (s.sub_code || '') + ' nesse dia.' },
+        { text: 'As faltas não dão lugar a devolução, conforme as condições do serviço.' }
+      ],
+      run: function () {
+        var d = $('sheetDate').value;
+        if (!d) { sheetError('Escolha o dia da falta.'); return Promise.resolve(); }
+        return rpc('sub_absence_web', { p_token: MTOKEN, p_sub_id: s.id, p_date: d })
+          .then(function (r) {
+            if (!r || !r.ok) throw new Error(errMsg(r));
+            doneScreen('Falta registada',
+              r.cancelled + ' viagem(ns) de ' + fmtDay(d) + ' cancelada(s). ' +
+              'Enviámos-lhe a confirmação por WhatsApp.', s.sub_code);
+          });
+      }
+    });
+  }
+
+  function askCancelSub(s) {
+    /* O valor a devolver é pedido ao servidor antes de mostrar a folha: é ele
+     * que sabe quais das viagens futuras ainda estão dentro do prazo. */
+    rpc('quote_sub_cancel', { p_token: MTOKEN, p_sub_id: s.id }).then(function (q) {
+      if (!q || !q.ok) return alertBox(errMsg(q));
+      var ref = Number(q.refund) || 0;
+      var lines = [{ text: 'Vamos cancelar as ' + q.trips_total + ' viagens futuras da subscrição ' + (s.sub_code || '') + '.' }];
+      if (q.trips_too_late > 0) {
+        lines.push({ text: 'Destas, ' + q.trips_too_late + ' são a menos de ' + q.min_hours +
+          'h e não contam para a devolução.' });
+      }
+      lines.push(ref > 0
+        ? { money: true, label: 'Devolução estimada', value: eur(ref) }
+        : { text: 'Não há valores a devolver.' });
+      lines.push({ text: 'A subscrição é cancelada definitivamente.' });
+      openSheet({
+        title: 'Cancelar a subscrição ' + (s.sub_code || '') + '?',
+        danger: true, yes: 'Sim, cancelar', lines: lines,
+        run: function () {
+          return rpc('cancel_subscription_web', { p_token: MTOKEN, p_sub_id: s.id })
+            .then(function (r) {
+              if (!r || !r.ok) throw new Error(errMsg(r));
+              doneScreen('Subscrição cancelada',
+                r.cancelled_trips + ' viagem(ns) futura(s) cancelada(s).' +
+                (Number(r.refund) > 0
+                  ? (' A devolução de ' + eur(r.refund) + ' será enviada para o MBWAY usado no pagamento.')
+                  : ' Sem valores a devolver.') +
+                ' Enviámos-lhe a confirmação por WhatsApp.', r.sub_code);
+            });
+        }
+      });
+    }).catch(function () { alertBox('Não foi possível calcular a devolução. Tente de novo.'); });
+  }
+
+  function alertBox(msg) {
+    openSheet({ title: 'Não foi possível', lines: [{ text: msg }], yes: 'Fechar',
+      run: function () { closeSheet(); return Promise.resolve(); } });
+  }
+
+  var ERRS = {
+    SESSION_INVALID: 'O seu link expirou. Volte ao WhatsApp e peça um novo.',
+    BOOKING_UNAVAILABLE: 'Essa viagem já não está disponível para alterar ou cancelar.',
+    BOOKING_NOT_PAID: 'Só é possível alterar depois de a reserva estar paga.',
+    SUBSCRIPTION_UNAVAILABLE: 'Essa subscrição já não está ativa.',
+    NO_TRIPS: 'Não há viagens dessa subscrição nesse dia.',
+    NO_PRICE: 'Não conseguimos calcular o novo valor. A nossa equipa vai contactá-lo — a reserva atual mantém-se.',
+    DATE_REQUIRED: 'Escolha o dia.'
+  };
+  function errMsg(r) {
+    if (r && r.errors && r.errors.length) return r.errors.map(function (e) { return e.message; }).join(' ');
+    return (r && (ERRS[r.error] || r.message)) || 'Não foi possível concluir. Tente de novo.';
+  }
+
+  function doneScreen(title, msg, code) {
+    closeSheet();
+    $('manage').hidden = true;
+    $('app').hidden = true;
+    $('done').hidden = false;
+    $('doneWa').href = 'https://wa.me/' + CFG.WHATSAPP;
+    $('doneTitle').textContent = title;
+    $('doneMsg').textContent = msg;
+    $('doneCode').textContent = code || '';
+    $('doneCode').hidden = !code;
+  }
+
+  /* ----------------------------------------------------- alterar viagem */
+
+  function startAlter(b) {
+    ALTER = b;
+    $('manage').hidden = true;
+    $('app').hidden = false;
+
+    $('secAlter').hidden = false;
+    $('alterCode').textContent = 'Nº ' + (b.booking_code || '—');
+    $('alterNow').textContent = 'Agora: ' + fmtWhen(b.pickup_at) +
+      (b.price_estimate != null ? (' · pago ' + eur(b.price_estimate)) : '');
+
+    var ht = $('heroTitle');
+    if (ht) ht.textContent = 'Alterar a viagem';
+    $('hello').textContent = 'Mude o que precisar — o valor actualiza-se sozinho.';
+
+    renderServices();
+
+    // pré-selecção do serviço da reserva, para o formulário abrir no sítio certo
+    var svc = (BOOT.services || []).filter(function (s) { return s.key === b.service_type; })[0];
+    if (svc) {
+      var btns = $('services').children;
+      for (var i = 0; i < btns.length; i++) {
+        if ((BOOT.services[i] || {}).key === svc.key) { chooseService(svc, btns[i]); break; }
+      }
+    }
+
+    TRIP = b.trip_type || 'one_way';
+    if (b.pickup_lat != null && b.pickup_lon != null) {
+      ORIGIN = { addr: b.pickup_address, lat: Number(b.pickup_lat), lon: Number(b.pickup_lon) };
+      if (AC.origin) AC.origin.seed(b.pickup_address);
+    }
+    if (b.dropoff_lat != null && b.dropoff_lon != null) {
+      DEST = { addr: b.dropoff_address, lat: Number(b.dropoff_lat), lon: Number(b.dropoff_lon) };
+      if (AC.dest) AC.dest.seed(b.dropoff_address);
+    }
+
+    var dt = new Date(b.pickup_at);
+    // input[type=date|time] querem hora local de Lisboa, não UTC
+    var parts = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: 'Europe/Lisbon', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hour12: false
+    }).format(dt).split(' ');
+    $('date').value = parts[0];
+    $('time').value = (parts[1] || '').slice(0, 5);
+    if (b.wait_minutes != null) $('waitMin').value = String(b.wait_minutes);
+    if (b.duration_min) $('duration').value = String(Math.round(b.duration_min / 60));
+    if (b.notes) $('notes').value = b.notes;
+
+    // os vouchers não se aplicam a alterações, como no chat
+    show('secVoucher', false);
+    // o MBWAY da diferença vai para o número que pagou a reserva
+    show('secPay', false);
+    $('terms').checked = true;
+
+    layout();
+    scheduleQuote();
+    window.scrollTo({ top: 0 });
+  }
+
+  function stopAlter() {
+    ALTER = null;
+    $('secAlter').hidden = true;
+    renderManage();
   }
 
   /* ------------------------------------------------------------ serviços */
@@ -374,6 +775,9 @@
     if (KIND === 'school') TRIP = 'round_trip';
     layout();
     scheduleQuote();
+    // a alteração já entra com o serviço escolhido: saltar para o passo
+    // seguinte esconderia logo o aviso de qual reserva se está a mexer
+    if (ALTER) return;
     // no telemóvel o passo seguinte fica fora do ecrã depois de escolher —
     // trazê-lo à vista poupa um scroll a quem está a usar uma mão só
     var next = $('secTrip').hidden ? ($('secSchool').hidden ? $('secWhere') : $('secSchool')) : $('secTrip');
@@ -414,8 +818,10 @@
     $('lblTimeOut').textContent = KIND === 'school' ? 'Hora de entrada na escola' : 'Hora da ida';
     $('lblTimeRet').textContent = KIND === 'school' ? 'Hora de saída da escola' : 'Hora do regresso';
 
-    show('secVoucher', KIND === 'once');
-    show('secPay', KIND !== 'school' && BOOT.mbway_enabled);
+    /* Em alteração não há voucher (como no chat) nem se pergunta o MBWAY: a
+     * diferença é cobrada no número que pagou a reserva original. */
+    show('secVoucher', KIND === 'once' && !ALTER);
+    show('secPay', KIND !== 'school' && BOOT.mbway_enabled && !ALTER);
     show('secFinal', true);
     show('fldNotes', KIND === 'once');
 
@@ -523,7 +929,17 @@
       return Promise.resolve(null);
     }
 
-    var call = KIND === 'regular'
+    var call = ALTER
+      ? rpc('quote_change', {
+        p_token: MTOKEN, p_booking_id: ALTER.id,
+        p_service_key: SVC.key, p_trip_type: TRIP,
+        p_origin_lat: ORIGIN.lat, p_origin_lon: ORIGIN.lon,
+        p_dest_lat: DEST ? DEST.lat : null, p_dest_lon: DEST ? DEST.lon : null,
+        p_date: $('date').value, p_time: $('time').value,
+        p_wait_minutes: TRIP === 'round_trip' ? Number($('waitMin').value || 0) : 0,
+        p_duration_min: SVC.pricing_mode === 'per_hour' ? Math.round(Number($('duration').value || 0) * 60) : null
+      })
+      : KIND === 'regular'
       ? rpc('quote_subscription', {
         p_token: TOKEN, p_service_key: SVC.key, p_trip_type: TRIP,
         p_origin_lat: ORIGIN.lat, p_origin_lon: ORIGIN.lon,
@@ -544,11 +960,34 @@
 
     return call.then(function (q) {
       QUOTE = q;
-      if (q && q.error === 'SESSION_INVALID') {
-        fail('O seu link expirou. Volte ao WhatsApp e escreva "agendar" para receber um novo.');
-        return null;
+      if (q && q.error === 'SESSION_INVALID') { expired(); return null; }
+      if (q && (q.error === 'BOOKING_UNAVAILABLE' || q.error === 'BOOKING_NOT_PAID')) {
+        showErrors([{ message: ERRS[q.error] }]);
+        $('btnGo').disabled = true;
+        return q;
       }
       showErrors((q && q.errors) || []);
+
+      /* Em alteração o número que interessa não é o preço da viagem, é o que
+       * falta pagar ou o que há a devolver — é isso que decide se o cliente
+       * confirma. O preço novo fica na linha de baixo. */
+      if (ALTER) {
+        if (q.price == null) { setBar('calc', '—', 'Preencha os campos acima.'); $('btnGo').disabled = true; return q; }
+        var due = Number(q.amount_due) || 0, ref = Number(q.refund) || 0;
+        var det = 'Novo valor ' + eur(q.price) + ' · já pago ' + eur(q.paid);
+        if (due > 0) {
+          setBar('ok', eur(due), det, 'A pagar');
+          $('barVal').className = 'bar-val diff-up';
+        } else if (ref > 0) {
+          setBar('ok', eur(ref), det + ' · taxa ' + eur(q.change_fee), 'A devolver');
+          $('barVal').className = 'bar-val diff-down';
+        } else {
+          setBar('ok', 'Sem custo', det);
+        }
+        $('btnGo').disabled = !q.ok;
+        return q;
+      }
+
       if (KIND === 'regular') {
         if (q.week_price == null) { setBar('calc', '—', 'Preencha os campos acima.'); $('btnGo').disabled = true; return q; }
         var note = q.trips_per_week + ' viagens/semana';
@@ -591,6 +1030,7 @@
 
   function submit() {
     if (BUSY) return;
+    if (ALTER) return submitAlter();
     if (!$('terms').checked) { showErrors([{ message: 'Precisa de aceitar os Termos e Condições.' }]); return; }
     var phone = $('mbway').value.replace(/\D/g, '');
     if (phone.indexOf('351') === 0) phone = phone.slice(3);
@@ -661,6 +1101,55 @@
     });
   }
 
+  /* A alteração não cria nada: recalcula, compara com o que já foi pago e ou
+   * cobra a diferença por MBWAY (e só aplica depois de paga), ou aplica-a já e
+   * devolve o que sobra. Quem decide qual dos dois é o Postgres — aqui só se
+   * mostra o resultado. */
+  function submitAlter() {
+    BUSY = true;
+    $('btnGo').disabled = true;
+    $('btnGo').textContent = 'A enviar…';
+
+    rpc('submit_change', {
+      p_token: MTOKEN, p_booking_id: ALTER.id,
+      p_service_key: SVC.key, p_trip_type: TRIP,
+      p_origin_address: ORIGIN.addr, p_origin_lat: ORIGIN.lat, p_origin_lon: ORIGIN.lon,
+      p_dest_address: DEST ? DEST.addr : null,
+      p_dest_lat: DEST ? DEST.lat : null, p_dest_lon: DEST ? DEST.lon : null,
+      p_date: $('date').value, p_time: $('time').value,
+      p_wait_minutes: TRIP === 'round_trip' ? Number($('waitMin').value || 0) : 0,
+      p_duration_min: SVC.pricing_mode === 'per_hour' ? Math.round(Number($('duration').value || 0) * 60) : null,
+      p_notes: $('notes').value.trim() || null
+    }).then(function (r) {
+      BUSY = false;
+      $('btnGo').textContent = 'Confirmar';
+      if (!r || !r.ok) {
+        $('btnGo').disabled = false;
+        if (r && r.error === 'SESSION_INVALID') return expired();
+        showErrors([{ message: errMsg(r) }]);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        return;
+      }
+      if (r.outcome === 'awaiting_payment') {
+        doneScreen('Alteração registada',
+          'Vamos enviar um pedido MBWAY de ' + eur(r.amount_due) + ' (a diferença) para o número que usou no pagamento. ' +
+          'A alteração só é aplicada depois de pagar — até lá a reserva atual mantém-se ativa.',
+          r.booking_code);
+      } else {
+        doneScreen('Alteração confirmada',
+          (Number(r.refund) > 0
+            ? ('A devolução de ' + eur(r.refund) + ' será enviada para o MBWAY usado no pagamento. ')
+            : 'Sem diferença de valor. ') +
+          'Enviámos-lhe a confirmação por WhatsApp.',
+          r.booking_code);
+      }
+    }).catch(function () {
+      BUSY = false;
+      $('btnGo').disabled = false; $('btnGo').textContent = 'Confirmar';
+      showErrors([{ message: 'Falha de ligação. Tente de novo.' }]);
+    });
+  }
+
   function finish(r) {
     $('app').hidden = true;
     $('done').hidden = false;
@@ -689,9 +1178,24 @@
   /* ------------------------------------------------------------- ligações */
 
   function wire() {
-    attachAutocomplete($('origin'), $('acOrigin'), function (p) { ORIGIN = p; scheduleQuote(); });
-    attachAutocomplete($('dest'), $('acDest'), function (p) { DEST = p; scheduleQuote(); });
-    attachAutocomplete($('schoolAddr'), $('acSchoolAddr'), function (p) { SCHOOL = p; scheduleQuote(); });
+    AC.origin = attachAutocomplete($('origin'), $('acOrigin'), function (p) { ORIGIN = p; scheduleQuote(); });
+    AC.dest = attachAutocomplete($('dest'), $('acDest'), function (p) { DEST = p; scheduleQuote(); });
+    AC.school = attachAutocomplete($('schoolAddr'), $('acSchoolAddr'), function (p) { SCHOOL = p; scheduleQuote(); });
+
+    $('alterBack').addEventListener('click', stopAlter);
+    $('sheetNo').addEventListener('click', closeSheet);
+    $('sheetBg').addEventListener('click', closeSheet);
+    $('sheetYes').addEventListener('click', function () {
+      if (!sheetAction) return;
+      $('sheetYes').disabled = true;
+      $('sheetYes').textContent = 'A processar…';
+      Promise.resolve()
+        .then(sheetAction)
+        .catch(function (e) { sheetError(String((e && e.message) || e)); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !$('sheet').hidden) closeSheet();
+    });
 
     Array.prototype.forEach.call($('tripSeg').children, function (b) {
       b.addEventListener('click', function () { TRIP = b.dataset.v; layout(); scheduleQuote(); });
@@ -727,7 +1231,9 @@
     });
 
     $('terms').addEventListener('change', function () {
-      $('btnGo').disabled = KIND === 'school'
+      $('btnGo').disabled = ALTER
+        ? !(QUOTE && QUOTE.ok)
+        : KIND === 'school'
         ? !schoolReady()
         : !(QUOTE && QUOTE.ok && $('terms').checked);
     });

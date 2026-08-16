@@ -21,6 +21,59 @@
   <a id="gateWa" class="btn-wa" href="#" hidden>Voltar ao WhatsApp</a>
 </div>
 
+<!-- ecrã de gestão: só com um link #m= (cancelar / alterar) -->
+<main id="manage" hidden>
+  <header class="hero" id="mgHero">
+    <div class="hero-in">
+      <div class="brand">
+        <img src="" alt="" id="mgLogo">
+        <span>BORREGAVELOZ</span>
+      </div>
+      <h1 id="mgTitle">As suas viagens</h1>
+      <p id="mgHello" class="hdr-sub"></p>
+    </div>
+  </header>
+
+  <section class="card" id="mgTrips" hidden>
+    <h2>Viagens marcadas</h2>
+    <div class="mg-list" id="mgTripList"></div>
+  </section>
+
+  <section class="card" id="mgSubs" hidden>
+    <h2>Subscrições</h2>
+    <div class="mg-list" id="mgSubList"></div>
+  </section>
+
+  <section class="card" id="mgEmpty" hidden>
+    <h2>Nada por aqui</h2>
+    <p class="hint">Não tem viagens marcadas nem subscrições activas, por isso não há
+      nada para cancelar ou alterar.</p>
+  </section>
+
+  <div class="pad"></div>
+  <div class="mg-foot">
+    <a class="btn-wa" id="mgWa" href="#">Voltar ao WhatsApp</a>
+  </div>
+</main>
+
+<!-- folha de confirmação (cancelar viagem / cancelar subscrição / marcar falta) -->
+<div id="sheet" class="sheet-wrap" hidden>
+  <div class="sheet-bg" id="sheetBg"></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h3 id="sheetTitle"></h3>
+    <div id="sheetBody"></div>
+    <label class="fld" id="sheetDateFld" hidden>
+      <span>Em que dia não vai precisar da viagem?</span>
+      <input type="date" id="sheetDate">
+    </label>
+    <p class="hint bad" id="sheetErr" hidden></p>
+    <div class="sheet-acts">
+      <button type="button" class="btn-sec" id="sheetNo">Voltar</button>
+      <button type="button" class="btn-go" id="sheetYes">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <main id="app" hidden>
 
   <!-- topo com fotografia a sangrar e desvanecimento para o fundo -->
@@ -36,6 +89,15 @@
   </header>
 
   <form id="form" autocomplete="off" novalidate>
+
+    <!-- aviso de alteração: só existe quando se veio da lista de gestão -->
+    <section class="card card-alter" id="secAlter" hidden>
+      <h2>A alterar a reserva <span id="alterCode"></span></h2>
+      <p class="hint" id="alterNow"></p>
+      <p class="hint">Mude o que precisar abaixo. Mostramos a diferença antes de confirmar —
+        <strong>a reserva atual mantém-se ativa até então</strong> e o número não muda.</p>
+      <button type="button" class="btn-sec" id="alterBack">↩ Voltar às minhas viagens</button>
+    </section>
 
     <!-- 1. serviço -->
     <section class="card">
