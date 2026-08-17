@@ -29,12 +29,25 @@ As quatro em uso desde 15-08-2026, recortadas do original em retrato para uma
 faixa panorâmica centrada no essencial (o topo mostra a imagem quase toda, em
 vez de uma fatia ao calhas). Recortes usados, para se poderem repetir:
 
-| Serviço | Recorte do original |
-|---|---|
-| ocasional | `1200x850+0+300` |
-| regular | `1333x900+0+550` |
-| escolar | `1331x950+0+380` (foto nova, 17-08-2026) |
-| privado | `842x680+0+90` |
+| Serviço | Foto | Recorte do original |
+|---|---|---|
+| ocasional | mulher a conduzir, GPS no telemóvel | `1333x900+0+550` |
+| regular | homem de fato a conduzir, portátil atrás | `842x680+0+90` |
+| escolar | menino no banco de trás | `1331x950+0+380` |
+| partilhado | quatro pessoas no carro | `640x457+0+100` |
+| privado | motorista de colete abre a porta | `1200x850+0+300` |
+
+> **As fotos estiveram trocadas entre si de 15 a 17-08-2026.** O `ocasional` tinha
+> a do motorista de colete (que é o `privado`), o `regular` tinha a do `ocasional`
+> e o `privado` tinha a do `regular` — uma rotação a três. O código nunca esteve
+> mal: o `probeServicePics` mapeia por `img/servicos/<chave>.webp` e sempre
+> mapeou bem. **Eram os ficheiros que tinham o conteúdo errado**, o que é
+> invisível a olhar para o código e só se apanha abrindo as imagens. Ao trocar
+> uma foto, abrir as cinco e confirmar que cada uma mostra o serviço certo.
+
+> **A do `partilhado` é 640x457**, abaixo dos ~1100 px que esta pasta recomenda:
+> foi o tamanho do original disponível. Num telemóvel 3× vai notar-se mais mole
+> do que as outras. Se aparecer um original maior, vale a pena refazê-la.
 
 No privado o primeiro recorte não servia: o portátil dominava com o motorista
 minúsculo. Vale a pena simular o gradiente antes de publicar.
