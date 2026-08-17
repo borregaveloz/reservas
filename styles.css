@@ -216,12 +216,29 @@ form{
     linear-gradient(180deg, rgba(11,14,19,.30) 0%, rgba(11,14,19,.20) 26%,
                             rgba(11,14,19,.72) 68%, var(--bg) 100%),
     var(--svc-pic, none);
-  background-size:cover, cover;
-  background-position:center, center 50%;
+  /* No telemóvel a faixa é mais alta do que a foto dá de si àquela largura (as
+     quatro rondam 1,4:1 e a faixa fica perto de 1,15:1), e com `cover` o que
+     sobrava era uma fatia do meio — a cara da cliente ficava cortada em cima.
+     Com `contain` alinhado ao topo vê-se a fotografia inteira; a nesga que fica
+     por baixo não se nota, porque é exactamente onde o gradiente já apagava a
+     imagem para o texto se ler. */
+  background-size:cover, contain;
+  background-position:center, center top;
   background-repeat:no-repeat;
   opacity:0; transition:opacity .5s var(--ease);
 }
 .hero.has-pic::after{opacity:1}
+
+/* A partir de ~560 px a faixa fica mais larga do que a proporção da foto, e aí
+   `contain` deixaria barras vazias dos lados. Volta-se a `cover` e ganha-se
+   altura com a largura, para o recorte ser pouco em vez de dois terços. */
+@media (min-width:560px){
+  .hero{min-height:min(46vw, 440px)}
+  .hero::after{
+    background-size:cover, cover;
+    background-position:center, center 40%;
+  }
+}
 
 .svc .nm{font-weight:500; letter-spacing:-.015em; line-height:1.25}
 .svc .ds{
