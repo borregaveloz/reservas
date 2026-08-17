@@ -14,6 +14,13 @@ window.CFG = {
   // chave com restrição por referrer (ver README).
   GOOGLE_KEY:   'AIzaSyDw8PDYOYpKVunKhpTctcAFEAOXL0eulPs',
   WHATSAPP:     '351961036101',
-  LOGO:         'https://borregaveloz.github.io/termos/img/logo_w.jpg',
-  TERMOS:       'https://borregaveloz.github.io/termos/'
+  TERMOS:       'https://borregaveloz.github.io/termos/',
+
+  // Versão mostrada no rodapé. Subir à mão quando se publica uma alteração que
+  // o cliente veja — é o que permite saber de que versão ele está a falar
+  // quando reporta um problema. A data ao lado não se toca: sai do
+  // `Last-Modified` que o GitHub Pages envia (ver stamp() no app.js).
+  VERSION:      '1.1.0'
 };
+// O logótipo saiu do cabeçalho a 17-08-2026 e com ele a chave LOGO. A saudação
+// do WhatsApp continua a mandar a imagem — mas isso é do n8n, não desta página.

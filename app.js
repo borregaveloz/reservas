@@ -303,11 +303,32 @@
       : fail('O seu link expirou. Volte ao WhatsApp e escreva "agendar" para receber um novo.');
   }
 
+  /* Versão e data de compilação, no rodapé.
+   *
+   * A versão vem do config.js e é posta à mão. A data não: sai do
+   * `document.lastModified`, que o browser lê do cabeçalho `Last-Modified` que o
+   * GitHub Pages envia — ou seja, é a data em que a página foi mesmo publicada,
+   * sem depender de alguém se lembrar de a actualizar.
+   *
+   * Quando esse cabeçalho falta, a norma manda o browser devolver a hora actual
+   * em vez de nada. Por isso só se mostra a data se ela for anterior ao arranque
+   * da página; caso contrário fica só a versão. Mais vale não ter data do que
+   * carimbar "compilado hoje" todos os dias.
+   */
+  function stamp() {
+    var txt = CFG.VERSION ? ('v' + CFG.VERSION) : '';
+    var d = new Date(document.lastModified);
+    if (!isNaN(d.getTime()) && (Date.now() - d.getTime()) > 60000) {
+      var data = d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      txt = txt ? (txt + ' · ' + data) : data;
+    }
+    ['footVer', 'footVerMg'].forEach(function (id) {
+      var e = $(id); if (e) e.textContent = txt;
+    });
+  }
+
   function boot() {
-    $('gateLogo').src = CFG.LOGO;
-    $('hdrLogo').src = CFG.LOGO;
-    $('doneLogo').src = CFG.LOGO;
-    $('mgLogo').src = CFG.LOGO;
+    stamp();
     $('termsLink').href = CFG.TERMOS;
     $('mgWa').href = 'https://wa.me/' + CFG.WHATSAPP;
 

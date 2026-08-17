@@ -43,6 +43,23 @@ dentro é um token de sessão válido, que dura 3 horas.
 | `img/hero.webp` | fotografia do topo |
 | `img/servicos/` | imagem opcional por serviço (ver LEIA-ME lá dentro) |
 
+## Versão no rodapé
+
+O logótipo e a palavra BORREGAVELOZ saíram do cabeçalho a 17-08-2026. A marca
+passou para o **rodapé**, com a versão e a data ao lado — que é o que permite
+saber de que versão o cliente está a falar quando reporta um problema.
+
+- **A versão é `CFG.VERSION`, no `config.js`, e sobe-se à mão.** Ao publicar uma
+  alteração que o cliente veja, subir também isto. Não há build step que o faça.
+- **A data não se toca.** Sai do `document.lastModified`, que o browser lê do
+  cabeçalho `Last-Modified` que o GitHub Pages envia — ou seja, é a data em que
+  a página foi mesmo publicada.
+  - Quando esse cabeçalho falta, a norma manda o browser devolver *a hora
+    actual*. Por isso o `stamp()` só mostra a data se ela for anterior ao
+    arranque da página: mais vale rodapé sem data do que carimbar "compilado
+    hoje" todos os dias. É por isso que em `python3 -m http.server`, com o
+    ficheiro acabado de escrever, aparece só a versão — não é defeito.
+
 ## Moradas
 
 Com `GOOGLE_KEY` preenchida usa a **Places API (New)** da Google. Sem chave cai

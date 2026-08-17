@@ -15,7 +15,6 @@
 
 <!-- ecrã de arranque / erro de sessão -->
 <div id="gate" class="gate">
-  <img class="gate-logo" src="" alt="BorregaVeloz" id="gateLogo">
   <div id="gateSpin" class="spinner"></div>
   <p id="gateMsg">A abrir a sua reserva…</p>
   <a id="gateWa" class="btn-wa" href="#" hidden>Voltar ao WhatsApp</a>
@@ -25,10 +24,6 @@
 <main id="manage" hidden>
   <header class="hero" id="mgHero">
     <div class="hero-in">
-      <div class="brand">
-        <img src="" alt="" id="mgLogo">
-        <span>BORREGAVELOZ</span>
-      </div>
       <h1 id="mgTitle">As suas viagens</h1>
       <p id="mgHello" class="hdr-sub"></p>
     </div>
@@ -50,10 +45,16 @@
       nada para cancelar ou alterar.</p>
   </section>
 
-  <div class="pad"></div>
   <div class="mg-foot">
     <a class="btn-wa" id="mgWa" href="#">Voltar ao WhatsApp</a>
   </div>
+
+  <footer class="foot">
+    <span class="foot-brand">BorregaVeloz</span>
+    <span class="foot-ver" id="footVerMg"></span>
+  </footer>
+
+  <div class="pad"></div>
 </main>
 
 <!-- folha de confirmação (cancelar viagem / cancelar subscrição / marcar falta) -->
@@ -79,10 +80,6 @@
   <!-- topo com fotografia a sangrar e desvanecimento para o fundo -->
   <header class="hero" id="hero">
     <div class="hero-in">
-      <div class="brand">
-        <img src="" alt="" id="hdrLogo">
-        <span>BORREGAVELOZ</span>
-      </div>
       <h1 id="heroTitle">Para onde vamos?</h1>
       <p id="hello" class="hdr-sub"></p>
     </div>
@@ -232,6 +229,12 @@
     </section>
 
     <div id="errors" class="errors" hidden></div>
+
+    <footer class="foot">
+      <span class="foot-brand">BorregaVeloz</span>
+      <span class="foot-ver" id="footVer"></span>
+    </footer>
+
     <div class="pad"></div>
   </form>
 
@@ -249,7 +252,6 @@
 
 <!-- ecrã final -->
 <div id="done" class="gate" hidden>
-  <img class="gate-logo done-logo" src="" alt="" id="doneLogo">
   <div class="done-tick"></div>
   <h2 id="doneTitle"></h2>
   <p id="doneMsg"></p>
