@@ -49,8 +49,21 @@ O logótipo e a palavra BORREGAVELOZ saíram do cabeçalho a 17-08-2026. A marca
 passou para o **rodapé**, com a versão e a data ao lado — que é o que permite
 saber de que versão o cliente está a falar quando reporta um problema.
 
-- **A versão é `CFG.VERSION`, no `config.js`, e sobe-se à mão.** Ao publicar uma
-  alteração que o cliente veja, subir também isto. Não há build step que o faça.
+**Publica-se com `./publicar.sh "mensagem"`**, que carimba a versão, faz commit,
+envia e espera pelo GitHub Pages. Não fazer `git push` à mão — é assim que a
+versão fica para trás.
+
+- **A versão é uma impressão digital do conteúdo publicado** (`index.html` +
+  `app.js` + `styles.css` + o `config.js` sem a própria linha da versão). Nada
+  há a lembrar: muda quando o conteúdo muda.
+  - Foi assim e não com o SHA do commit porque o SHA só existe **depois** de o
+    commit estar feito, e escrevê-lo no `config.js` obriga a outro commit, com
+    outro SHA — apontaria sempre para o commit anterior ao publicado.
+  - O `config.js` entra sem a linha da versão de propósito: senão carimbá-la
+    mudava a impressão que se estava a calcular e nunca estabilizava. O script
+    verifica esse ponto fixo e aborta se ele se perder.
+  - Antes disto a versão era um `1.2.0` escrito à mão. Durou dois commits antes
+    de ficar para trás.
 - **A data não se toca.** Sai do `document.lastModified`, que o browser lê do
   cabeçalho `Last-Modified` que o GitHub Pages envia — ou seja, é a data em que
   a página foi mesmo publicada.

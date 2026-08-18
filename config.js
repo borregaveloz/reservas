@@ -16,11 +16,13 @@ window.CFG = {
   WHATSAPP:     '351961036101',
   TERMOS:       'https://borregaveloz.github.io/termos/',
 
-  // Versão mostrada no rodapé. Subir à mão quando se publica uma alteração que
-  // o cliente veja — é o que permite saber de que versão ele está a falar
-  // quando reporta um problema. A data ao lado não se toca: sai do
-  // `Last-Modified` que o GitHub Pages envia (ver stamp() no app.js).
-  VERSION:      '1.2.0'
+  // NÃO EDITAR À MÃO — é o publicar.sh que escreve isto.
+  //
+  // Impressão digital do que o cliente recebe (index.html + app.js +
+  // styles.css + este ficheiro sem esta linha). Muda quando o conteúdo muda e
+  // não muda quando não muda, sem depender de ninguém se lembrar. A data ao
+  // lado sai do `Last-Modified` do GitHub Pages (ver stamp() no app.js).
+  VERSION:      '8154cea'
 };
 // O logótipo saiu do cabeçalho a 17-08-2026 e com ele a chave LOGO. A saudação
 // do WhatsApp continua a mandar a imagem — mas isso é do n8n, não desta página.
