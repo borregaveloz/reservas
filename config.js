@@ -20,7 +20,7 @@ window.CFG = {
   // o cliente veja — é o que permite saber de que versão ele está a falar
   // quando reporta um problema. A data ao lado não se toca: sai do
   // `Last-Modified` que o GitHub Pages envia (ver stamp() no app.js).
-  VERSION:      '1.1.0'
+  VERSION:      '1.2.0'
 };
 // O logótipo saiu do cabeçalho a 17-08-2026 e com ele a chave LOGO. A saudação
 // do WhatsApp continua a mandar a imagem — mas isso é do n8n, não desta página.
