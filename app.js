@@ -348,7 +348,9 @@
     s.className = 'nome';
     s.textContent = nome;
     el.appendChild(s);
-    el.appendChild(document.createTextNode('?'));
+    // Espaço inquebrável antes do ponto de interrogação: com um espaço normal,
+    // o "?" podia cair sozinho para a linha seguinte quando o nome é comprido.
+    el.appendChild(document.createTextNode('\u00A0?'));
   }
 
   function boot() {
