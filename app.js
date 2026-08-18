@@ -303,25 +303,31 @@
       : fail('O seu link expirou. Volte ao WhatsApp e escreva "agendar" para receber um novo.');
   }
 
-  /* Versão e data de compilação, no rodapé.
+  /* Rodapé: "Versão 1.2.1 (build a1b2c3d) 18-08-2026".
    *
-   * A versão vem do config.js e é posta à mão. A data não: sai do
-   * `document.lastModified`, que o browser lê do cabeçalho `Last-Modified` que o
-   * GitHub Pages envia — ou seja, é a data em que a página foi mesmo publicada,
-   * sem depender de alguém se lembrar de a actualizar.
+   * Três origens diferentes, de propósito. A **versão** vem do config.js e é
+   * escrita à mão — é o número que as pessoas dizem em voz alta. O **build** é
+   * carimbado pelo publicar.sh e é uma impressão digital do conteúdo, por isso
+   * identifica o código ao certo mesmo que a versão fique esquecida. A **data**
+   * sai do `document.lastModified`, que o browser lê do `Last-Modified` do
+   * GitHub Pages: é o dia em que a página foi mesmo publicada.
    *
    * Quando esse cabeçalho falta, a norma manda o browser devolver a hora actual
-   * em vez de nada. Por isso só se mostra a data se ela for anterior ao arranque
-   * da página; caso contrário fica só a versão. Mais vale não ter data do que
-   * carimbar "compilado hoje" todos os dias.
+   * em vez de nada. Por isso a data só entra se for anterior ao arranque da
+   * página — mais vale rodapé sem data do que carimbar "compilado hoje" todos
+   * os dias. Cada parte aparece só se existir.
    */
   function stamp() {
-    var txt = CFG.VERSION ? ('v' + CFG.VERSION) : '';
+    var p = [];
+    if (CFG.VERSION) p.push('Versão ' + CFG.VERSION);
+    if (CFG.BUILD) p.push('(build ' + CFG.BUILD + ')');
     var d = new Date(document.lastModified);
     if (!isNaN(d.getTime()) && (Date.now() - d.getTime()) > 60000) {
-      var data = d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-      txt = txt ? (txt + ' · ' + data) : data;
+      var dd = ('0' + d.getDate()).slice(-2);
+      var mm = ('0' + (d.getMonth() + 1)).slice(-2);
+      p.push(dd + '-' + mm + '-' + d.getFullYear());
     }
+    var txt = p.join(' ');
     ['footVer', 'footVerMg'].forEach(function (id) {
       var e = $(id); if (e) e.textContent = txt;
     });

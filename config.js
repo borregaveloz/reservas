@@ -16,13 +16,18 @@ window.CFG = {
   WHATSAPP:     '351961036101',
   TERMOS:       'https://borregaveloz.github.io/termos/',
 
-  // NÃO EDITAR À MÃO — é o publicar.sh que escreve isto.
+  // Rodapé: "Versão 1.2.1 (build a1b2c3d) 18-08-2026".
   //
-  // Impressão digital do que o cliente recebe (index.html + app.js +
-  // styles.css + este ficheiro sem esta linha). Muda quando o conteúdo muda e
-  // não muda quando não muda, sem depender de ninguém se lembrar. A data ao
-  // lado sai do `Last-Modified` do GitHub Pages (ver stamp() no app.js).
-  VERSION:      '8154cea'
+  // A VERSÃO é para as pessoas e escreve-se à mão — é o que permite dizer "isso
+  // foi na 1.2". Subir ao publicar algo que o cliente veja; se ficar esquecida,
+  // não se perde nada de essencial, porque o build ao lado não deixa dúvidas.
+  VERSION:      '1.2.1',
+
+  // O BUILD é para as máquinas e NÃO SE EDITA — é o publicar.sh que o escreve.
+  // Impressão digital do que o cliente recebe (index.html + app.js + styles.css
+  // + este ficheiro sem esta linha). Muda quando o conteúdo muda e não muda
+  // quando não muda. A data sai do `Last-Modified` do GitHub Pages.
+  BUILD:        '38f3581'
 };
 // O logótipo saiu do cabeçalho a 17-08-2026 e com ele a chave LOGO. A saudação
 // do WhatsApp continua a mandar a imagem — mas isso é do n8n, não desta página.

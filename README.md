@@ -49,21 +49,29 @@ O logótipo e a palavra BORREGAVELOZ saíram do cabeçalho a 17-08-2026. A marca
 passou para o **rodapé**, com a versão e a data ao lado — que é o que permite
 saber de que versão o cliente está a falar quando reporta um problema.
 
-**Publica-se com `./publicar.sh "mensagem"`**, que carimba a versão, faz commit,
-envia e espera pelo GitHub Pages. Não fazer `git push` à mão — é assim que a
-versão fica para trás.
+O rodapé mostra **`Versão 1.2.1 (build a1b2c3d) 18-08-2026`**, com três origens
+diferentes de propósito.
 
-- **A versão é uma impressão digital do conteúdo publicado** (`index.html` +
-  `app.js` + `styles.css` + o `config.js` sem a própria linha da versão). Nada
-  há a lembrar: muda quando o conteúdo muda.
-  - Foi assim e não com o SHA do commit porque o SHA só existe **depois** de o
-    commit estar feito, e escrevê-lo no `config.js` obriga a outro commit, com
-    outro SHA — apontaria sempre para o commit anterior ao publicado.
-  - O `config.js` entra sem a linha da versão de propósito: senão carimbá-la
-    mudava a impressão que se estava a calcular e nunca estabilizava. O script
-    verifica esse ponto fixo e aborta se ele se perder.
-  - Antes disto a versão era um `1.2.0` escrito à mão. Durou dois commits antes
-    de ficar para trás.
+```
+./publicar.sh "mensagem"            # carimba o build e publica
+./publicar.sh "mensagem" 1.3.0      # sobe também a versão
+```
+
+Não fazer `git push` à mão — é assim que o carimbo fica para trás.
+
+- **A versão é para as pessoas** e escreve-se à mão no `config.js`. É o número
+  que se diz em voz alta ("isso foi na 1.2"). Se ficar esquecida não se perde
+  nada de essencial, porque o build ao lado não deixa dúvidas.
+- **O build é para as máquinas** e é carimbado pelo `publicar.sh`: uma impressão
+  digital do conteúdo publicado (`index.html` + `app.js` + `styles.css` + o
+  `config.js` sem a própria linha do `BUILD`).
+  - Não é o SHA do commit porque o SHA só existe **depois** de o commit estar
+    feito, e escrevê-lo no `config.js` obriga a outro commit, com outro SHA —
+    apontaria sempre para o commit anterior ao publicado.
+  - A linha do `BUILD` fica de fora da impressão senão carimbá-la mudava a
+    impressão que se estava a calcular, e nunca estabilizava. **A linha da
+    `VERSION` entra**: subir a versão é uma alteração ao que o cliente recebe.
+    O script verifica esse ponto fixo e aborta se ele se perder.
 - **A data não se toca.** Sai do `document.lastModified`, que o browser lê do
   cabeçalho `Last-Modified` que o GitHub Pages envia — ou seja, é a data em que
   a página foi mesmo publicada.
