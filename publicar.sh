@@ -5,7 +5,7 @@
 #   ./publicar.sh "mensagem do commit"           # mantém a versão
 #   ./publicar.sh "mensagem do commit" 1.3.0     # sobe também a versão
 #
-# O rodapé mostra "Versão 1.2.1 (build a1b2c3d) 18-08-2026", com três origens:
+# O rodapé mostra "Versão 1.2.3 (build a1b2c3d) 18-08-2026", com três origens:
 #
 #   versão  escrita à mão no config.js, para as pessoas
 #   build   carimbado aqui, impressão digital do conteúdo, para as máquinas
@@ -15,14 +15,23 @@
 # estar feito, e escrevê-lo no config.js obriga a outro commit, com outro SHA.
 # Ficaria sempre a apontar para o commit anterior ao que está publicado.
 #
-# O config.js entra na impressão sem a própria linha do BUILD, senão carimbá-la
-# mudava a impressão que se estava a calcular — e nunca estabilizava. A linha da
-# VERSION entra: subir a versão é uma alteração ao que o cliente recebe.
+# O build é também colado às referências dos ficheiros no index.html
+# (`app.js?v=…`). Sem isso, o GitHub Pages manda `cache-control: max-age=600` e
+# quem já tinha aberto a página continuava a receber o JavaScript antigo — uma
+# publicação podia demorar dez minutos a aparecer, ou não aparecer de todo até
+# a pessoa forçar a actualização. Aconteceu a 18-08-2026 e deu a entender que a
+# publicação tinha falhado quando não tinha.
+#
+# A impressão ignora tanto a linha do BUILD como os `?v=` do index.html: são
+# justamente o que este script escreve, e sem os ignorar a impressão mudava ao
+# ser carimbada e nunca estabilizava. A linha da VERSION entra, porque subir a
+# versão é uma alteração ao que o cliente recebe.
 set -euo pipefail
 cd "$(dirname "$0")"
 
 impressao() {
-  { cat index.html app.js styles.css
+  { sed -E 's/\?v=[a-z0-9]*//g' index.html
+    cat app.js styles.css
     grep -v "BUILD:" config.js
   } | sha256sum | cut -c1-7
 }
@@ -34,11 +43,14 @@ fi
 
 B=$(impressao)
 sed -i -E "s/(BUILD: *')[^']*(')/\1${B}\2/" config.js
+sed -i -E "s#(src=\"(config|app)\.js)(\?v=[a-z0-9]*)?\"#\1?v=${B}\"#g" index.html
+sed -i -E "s#(href=\"styles\.css)(\?v=[a-z0-9]*)?\"#\1?v=${B}\"#g" index.html
 
 [ "$(impressao)" = "$B" ] || { echo "ERRO: a impressão digital não estabilizou"; exit 1; }
 
 V=$(grep -o "VERSION: *'[^']*'" config.js | grep -o "'[^']*'" | tr -d "'")
 echo "a publicar: Versão ${V} (build ${B})"
+grep -oE '(src|href)="(config|app)\.js\?v=[a-z0-9]*"|href="styles\.css\?v=[a-z0-9]*"' index.html | sed 's/^/  /'
 
 if git diff --quiet && git diff --cached --quiet; then
   echo "nada para publicar."

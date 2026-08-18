@@ -21,13 +21,13 @@ window.CFG = {
   // A VERSÃO é para as pessoas e escreve-se à mão — é o que permite dizer "isso
   // foi na 1.2". Subir ao publicar algo que o cliente veja; se ficar esquecida,
   // não se perde nada de essencial, porque o build ao lado não deixa dúvidas.
-  VERSION:      '1.2.2',
+  VERSION:      '1.2.3',
 
   // O BUILD é para as máquinas e NÃO SE EDITA — é o publicar.sh que o escreve.
   // Impressão digital do que o cliente recebe (index.html + app.js + styles.css
   // + este ficheiro sem esta linha). Muda quando o conteúdo muda e não muda
   // quando não muda. A data sai do `Last-Modified` do GitHub Pages.
-  BUILD:        'c27f19f'
+  BUILD:        '466b85d'
 };
 // O logótipo saiu do cabeçalho a 17-08-2026 e com ele a chave LOGO. A saudação
 // do WhatsApp continua a mandar a imagem — mas isso é do n8n, não desta página.

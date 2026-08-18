@@ -68,8 +68,15 @@ Não fazer `git push` à mão — é assim que o carimbo fica para trás.
   - Não é o SHA do commit porque o SHA só existe **depois** de o commit estar
     feito, e escrevê-lo no `config.js` obriga a outro commit, com outro SHA —
     apontaria sempre para o commit anterior ao publicado.
-  - A linha do `BUILD` fica de fora da impressão senão carimbá-la mudava a
-    impressão que se estava a calcular, e nunca estabilizava. **A linha da
+  - **O build é também colado às referências no `index.html`** —
+    `app.js?v=c27f19f`. Sem isso o GitHub Pages manda `cache-control:
+    max-age=600` e quem já tinha a página aberta continuava a receber o
+    JavaScript antigo: uma publicação demorava dez minutos a aparecer, ou não
+    aparecia até se forçar a actualização. Aconteceu a 18-08-2026 e deu a
+    entender que a publicação tinha falhado quando não tinha.
+  - A linha do `BUILD` **e os `?v=` do `index.html`** ficam de fora da
+    impressão: são justamente o que o script escreve, e sem os ignorar a
+    impressão mudava ao ser carimbada e nunca estabilizava. **A linha da
     `VERSION` entra**: subir a versão é uma alteração ao que o cliente recebe.
     O script verifica esse ponto fixo e aborta se ele se perder.
 - **A data não se toca.** Sai do `document.lastModified`, que o browser lê do
