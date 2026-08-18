@@ -622,3 +622,30 @@ body.kb .bar{transform:translateY(130%)}
 .foot-ver{
   font-size:11.5px; color:var(--tx-3); font-variant-numeric:tabular-nums;
 }
+
+/* ══════════════════════════════ nome do cliente ════════════════════════
+ *
+ * O nome sai destacado dentro da saudação, com um tom tirado da própria
+ * fotografia daquele serviço — brilha sem destoar do que está por trás.
+ *
+ * As cinco fotos partilham uma paleta quente de interior de automóvel, por
+ * isso os tons são vizinhos de propósito: são os que lá estão mesmo. O único
+ * tom com carácter próprio era o vermelho do brilho do tablier no `ocasional`
+ * (#AB2037), e foi descartado — é praticamente o `--err` do desenho, e o nome
+ * do cliente a vermelho-erro lê-se como um aviso.
+ *
+ * Todos acima de 10:1 de contraste sobre o fundo, portanto muito à frente do
+ * mínimo de 4,5:1; e há sombra por baixo para o caso de calhar sobre uma zona
+ * clara da fotografia.
+ */
+.hero .nome, .hdr-sub .nome{
+  color:var(--nome, var(--acc));
+  font-weight:700;
+  text-shadow:0 1px 14px rgba(0,0,0,.6), 0 0 26px rgba(0,0,0,.35);
+}
+.hero{--nome:#ffc233}                                  /* foto base: serra */
+.hero[data-svc="ocasional"] {--nome:#ffc98a}           /* dourado do sol */
+.hero[data-svc="regular"]   {--nome:#ffd089}           /* dourado do fato */
+.hero[data-svc="escolar"]   {--nome:#ffb27a}           /* laranja do cabelo */
+.hero[data-svc="partilhado"]{--nome:#f7cd97}           /* areia quente */
+.hero[data-svc="privado"]   {--nome:#efc79b}           /* champanhe */

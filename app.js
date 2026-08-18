@@ -327,6 +327,24 @@
     });
   }
 
+  /* "Para onde vamos hoje, Samuel?" — com o nome numa <span> própria, para
+   * poder levar a cor do serviço escolhido.
+   *
+   * Montado com nós de texto, não com innerHTML: o nome vem da base de dados e
+   * é o cliente que o escreve no WhatsApp. Uma concatenação de HTML aqui seria
+   * uma injecção à espera de acontecer.
+   */
+  function saudacao(el, frase, nome) {
+    el.textContent = '';
+    if (!nome) { el.textContent = frase + '?'; return; }
+    el.appendChild(document.createTextNode(frase + ', '));
+    var s = document.createElement('span');
+    s.className = 'nome';
+    s.textContent = nome;
+    el.appendChild(s);
+    el.appendChild(document.createTextNode('?'));
+  }
+
   function boot() {
     stamp();
     $('termsLink').href = CFG.TERMOS;
@@ -345,9 +363,7 @@
       $('app').hidden = false;
       var ht = $('heroTitle');   // só existe no desenho com foto no topo
       if (ht) {
-        ht.textContent = d.client.first_name
-          ? ('Para onde vamos, ' + d.client.first_name + '?')
-          : 'Para onde vamos?';
+        saudacao(ht, 'Para onde vamos hoje', d.client.first_name);
         $('hello').textContent = 'Reserve em menos de um minuto.';
       } else {
         $('hello').textContent = d.client.first_name
@@ -407,9 +423,18 @@
     $('manage').hidden = false;
 
     var bks = BOOT.bookings || [], subs = BOOT.subscriptions || [];
-    $('mgHello').textContent = BOOT.client.first_name
-      ? ('Olá, ' + BOOT.client.first_name + '! Toque numa viagem para alterar ou cancelar.')
-      : 'Toque numa viagem para alterar ou cancelar.';
+    var mh = $('mgHello');
+    mh.textContent = '';
+    if (BOOT.client.first_name) {
+      mh.appendChild(document.createTextNode('Olá, '));
+      var sn = document.createElement('span');
+      sn.className = 'nome';
+      sn.textContent = BOOT.client.first_name;
+      mh.appendChild(sn);
+      mh.appendChild(document.createTextNode('! Toque numa viagem para alterar ou cancelar.'));
+    } else {
+      mh.textContent = 'Toque numa viagem para alterar ou cancelar.';
+    }
 
     $('mgTrips').hidden = !bks.length;
     $('mgSubs').hidden = !subs.length;
