@@ -27,7 +27,7 @@ window.CFG = {
   // Impressão digital do que o cliente recebe (index.html + app.js + styles.css
   // + este ficheiro sem esta linha). Muda quando o conteúdo muda e não muda
   // quando não muda. A data sai do `Last-Modified` do GitHub Pages.
-  BUILD:        '466b85d'
+  BUILD:        'c67451b'
 };
 // O logótipo saiu do cabeçalho a 17-08-2026 e com ele a chave LOGO. A saudação
 // do WhatsApp continua a mandar a imagem — mas isso é do n8n, não desta página.

@@ -87,6 +87,17 @@ body{
   transition:transform .12s var(--ease);
 }
 .btn-wa:active{transform:scale(.965)}
+/* Fica visível enquanto se aguarda a confirmação do MBWAY — o botão para o
+   WhatsApp só aparece depois de o pagamento ser confirmado (ver finish()/
+   startPaymentWait() no app.js). */
+.done-wait{display:flex; flex-direction:column; align-items:center; gap:12px}
+.done-clock{
+  width:82px; height:82px; border-radius:50%; display:grid; place-items:center;
+  background:var(--card-2); border:3px solid var(--acc-dim);
+  font-size:21px; font-weight:700; font-variant-numeric:tabular-nums;
+  color:var(--acc); animation:pop .55s var(--ease) both;
+}
+.done-wait p{margin:0; max-width:30ch; font-size:14px; color:var(--tx-2)}
 
 /* ══════════════════════════════════ topo com foto ══════════════════════ */
 

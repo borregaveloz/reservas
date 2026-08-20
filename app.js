@@ -683,14 +683,82 @@
 
   function doneScreen(title, msg, code) {
     closeSheet();
+    stopPaymentWait();
     $('manage').hidden = true;
     $('app').hidden = true;
     $('done').hidden = false;
-    $('doneWa').href = 'https://wa.me/' + CFG.WHATSAPP;
     $('doneTitle').textContent = title;
     $('doneMsg').textContent = msg;
     $('doneCode').textContent = code || '';
     $('doneCode').hidden = !code;
+    showDoneWa();
+  }
+
+  /* --------------------------------------------------- espera do pagamento
+   *
+   * Depois de criar uma reserva/subscrição com MBWAY pendente, o botão
+   * "Voltar ao WhatsApp" só deve aparecer quando o pagamento estiver mesmo
+   * confirmado — antes disso o cliente ainda tem de aprovar o pedido na app
+   * MBWAY. Em vez de o deixar às escuras, mostra-se um relógio de 5 min e
+   * pergunta-se ao servidor (booking_payment_status, autenticado pelo mesmo
+   * token da sessão) a cada 3 s.
+   *
+   * Se os 5 min passarem sem confirmação, o relógio dá lugar ao botão na
+   * mesma — como sempre neste site, nunca se deixa o cliente sem saída — e a
+   * confirmação continua a chegar-lhe por WhatsApp assim que o pagamento
+   * for aceite (é o Workflow A2 quem avisa).
+   */
+  var PAY_WAIT_SECONDS = 300;
+  var payTimer = null, payPoll = null;
+
+  function showDoneWa() {
+    $('doneWait').hidden = true;
+    $('doneWa').hidden = false;
+    $('doneWa').href = 'https://wa.me/' + CFG.WHATSAPP;
+  }
+
+  function stopPaymentWait() {
+    if (payTimer) { clearInterval(payTimer); payTimer = null; }
+    if (payPoll) { clearInterval(payPoll); payPoll = null; }
+  }
+
+  function startPaymentWait() {
+    stopPaymentWait();
+    $('doneWaitMsg').textContent = 'A aguardar a confirmação do pagamento no MBWAY…';
+    $('doneWa').hidden = true;
+    $('doneWait').hidden = false;
+
+    var left = PAY_WAIT_SECONDS;
+    var paint = function () {
+      var m = Math.floor(left / 60), s = left % 60;
+      $('doneClock').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    };
+    paint();
+
+    function checkPayment() {
+      rpc('booking_payment_status', { p_token: TOKEN }).then(function (r) {
+        if (r && r.ok && r.paid) {
+          stopPaymentWait();
+          showDoneWa();
+        }
+      }).catch(function () { /* falha de rede: tenta de novo na próxima ronda */ });
+    }
+
+    payTimer = setInterval(function () {
+      left -= 1;
+      if (left <= 0) {
+        left = 0; paint();
+        stopPaymentWait();
+        $('doneMsg').textContent = 'Ainda não recebemos a confirmação do pagamento. ' +
+          'Avisamo-lo por WhatsApp assim que for confirmado.';
+        showDoneWa();
+        return;
+      }
+      paint();
+    }, 1000);
+
+    payPoll = setInterval(checkPayment, 3000);
+    checkPayment();
   }
 
   /* ----------------------------------------------------- alterar viagem */
@@ -1207,9 +1275,10 @@
   function finish(r) {
     $('app').hidden = true;
     $('done').hidden = false;
-    $('doneWa').href = 'https://wa.me/' + CFG.WHATSAPP;
     $('doneCode').textContent = r.booking_code || r.sub_code || '';
     $('doneCode').hidden = !(r.booking_code || r.sub_code);
+
+    var awaitingPay = false;
 
     if (r.kind === 'school') {
       $('doneTitle').textContent = 'Pedido registado!';
@@ -1219,14 +1288,18 @@
       $('doneTitle').textContent = 'Subscrição registada!';
       $('doneMsg').textContent = 'Vamos enviar já um pedido MBWAY de ' + eur(r.first_amount) +
         ' para o ' + r.mbway_phone + '. Aprove na app MBWAY e as viagens ficam agendadas.';
+      awaitingPay = true;
     } else if (r.awaiting_payment) {
       $('doneTitle').textContent = 'Reserva registada!';
       $('doneMsg').textContent = 'Vamos enviar já um pedido MBWAY de ' + eur(r.price) +
         ' para o ' + r.mbway_phone + '. Depois do pagamento é atribuído um motorista.';
+      awaitingPay = true;
     } else {
       $('doneTitle').textContent = 'Reserva registada!';
       $('doneMsg').textContent = 'A sua viagem está em validação — em breve será atribuído um motorista.';
     }
+
+    if (awaitingPay) startPaymentWait(); else showDoneWa();
   }
 
   /* ------------------------------------------------------------- ligações */
