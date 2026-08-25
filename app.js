@@ -1253,6 +1253,7 @@
         return;
       }
       if (r.outcome === 'awaiting_payment') {
+        kickPayment(MTOKEN, ALTER && ALTER.id);
         doneScreen('Alteração registada',
           'Vamos enviar um pedido MBWAY de ' + eur(r.amount_due) + ' (a diferença) para o número que usou no pagamento. ' +
           'A alteração só é aplicada depois de pagar — até lá a reserva atual mantém-se ativa.',
@@ -1270,6 +1271,27 @@
       $('btnGo').disabled = false; $('btnGo').textContent = 'Confirmar';
       showErrors([{ message: 'Falha de ligação. Tente de novo.' }]);
     });
+  }
+
+  /* O pedido MBWAY sai no instante em que a reserva fica gravada.
+   *
+   * Sem esta chamada o n8n só descobria a reserva na passagem seguinte do seu
+   * poller de 1 min: medido nas reservas reais, 8 a 99 segundos entre carregar
+   * em Confirmar e o pedido chegar ao telemóvel — com o cliente a olhar para o
+   * relógio de espera à espera de uma notificação que ainda nem tinha saído.
+   *
+   * Quem avisa o n8n é o Postgres (a RPC leva lá dentro o endereço do
+   * servidor, que assim nunca aparece nesta página). É de propósito muda e
+   * não bloqueia nada: se falhar, o poller continua a ser a rede de segurança
+   * e o cliente não tem nada a fazer com essa informação.
+   */
+  function kickPayment(token, bookingId) {
+    try {
+      rpc('request_payment_now', bookingId
+        ? { p_token: token, p_booking_id: bookingId }
+        : { p_token: token }
+      ).catch(function () { /* o poller trata disto dentro de 1 min */ });
+    } catch (e) { /* nunca partir o ecrã de sucesso por causa disto */ }
   }
 
   function finish(r) {
@@ -1299,7 +1321,7 @@
       $('doneMsg').textContent = 'A sua viagem está em validação — em breve será atribuído um motorista.';
     }
 
-    if (awaitingPay) startPaymentWait(); else showDoneWa();
+    if (awaitingPay) { kickPayment(TOKEN); startPaymentWait(); } else showDoneWa();
   }
 
   /* ------------------------------------------------------------- ligações */
