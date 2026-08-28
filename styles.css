@@ -1,8 +1,9 @@
 /* BorregaVeloz — desenho "A · Noite".
  *
  * Topo com fotografia a sangrar e desvanecimento para o fundo, tipografia
- * Poppins, ícones monocromáticos em traço (SVG aplicados por mask, para
- * herdarem a cor do texto) e botão-pílula com gradiente âmbar.
+ * Poppins, ícones monocromáticos de traço fino (SVG aplicados por mask, para
+ * herdarem a cor do texto) e botão-pílula com gradiente âmbar. Os ícones vêm
+ * do conjunto do proprietário — proveniência e mapa em README.md.
  *
  * Mobile-first: alvos de toque grandes, inputs a 16px (abaixo disso o iOS
  * faz zoom ao focar), feedback no :active porque no telemóvel não há :hover,
@@ -198,8 +199,8 @@ form{
 }
 .ic[data-svc="ocasional"] {--ic:url(icons/taxi.svg)}
 .ic[data-svc="regular"]   {--ic:url(icons/repeat.svg)}
-.ic[data-svc="escolar"]   {--ic:url(icons/backpack.svg)}
-.ic[data-svc="privado"]   {--ic:url(icons/wheel.svg)}
+.ic[data-svc="escolar"]   {--ic:url(icons/bus.svg)}
+.ic[data-svc="privado"]   {--ic:url(icons/person.svg)}
 .ic[data-svc="partilhado"]{--ic:url(icons/users.svg)}
 
 /* ══════════════════════════ fotografia por serviço ════════════════════
@@ -299,7 +300,7 @@ textarea{resize:vertical; min-height:66px; line-height:1.5; border-radius:var(--
   mask:url(icons/pin.svg) center/contain no-repeat;
 }
 #wrapDest.ac-wrap::before{
-  -webkit-mask-image:url(icons/flag.svg); mask-image:url(icons/flag.svg);
+  -webkit-mask-image:url(icons/signpost.svg); mask-image:url(icons/signpost.svg);
 }
 .ac-wrap:has(input:focus)::before{background:var(--acc)}
 
@@ -542,6 +543,19 @@ body.kb .bar{transform:translateY(130%)}
 .mg-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 .mg-when{font-weight:600;font-size:15.5px;color:var(--tx)}
 .mg-code{font-size:12px;color:var(--tx-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* O rótulo do transporte escolar leva o ícone da escola, não um emoji: o emoji
+   traz cor própria e era o único elemento da página fora da paleta em traço.
+   O ícone vai num ::before absoluto, e não num flex: o .mg-top alinha os filhos
+   pela linha de base, e com display:flex a linha de base do rótulo passava a
+   ser a da caixa do ícone — o código da subscrição, ao lado, saía do sítio. */
+.mg-when.school{position:relative; padding-left:24px}
+.mg-when.school::before{
+  content:""; position:absolute; left:0; top:3px;
+  width:17px; height:17px; background:var(--tx-2);
+  -webkit-mask:url(icons/school.svg) center/contain no-repeat;
+  mask:url(icons/school.svg) center/contain no-repeat;
+}
 
 .mg-route{margin:8px 0 0;font-size:13.5px;color:var(--tx-2);line-height:1.5}
 .mg-route span{display:block;padding-left:16px;position:relative}

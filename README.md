@@ -39,9 +39,44 @@ dentro é um token de sessão válido, que dura 3 horas.
 | `styles.css` | desenho "A · Noite": topo com foto, Poppins, ícones em traço |
 | `app.js` | lógica: sessão, moradas, orçamento, submissão |
 | `config.js` | URLs e chaves públicas |
-| `icons/` | 15 ícones monocromáticos em traço, aplicados por CSS mask |
+| `icons/` | 10 ícones monocromáticos, aplicados por CSS mask (ver abaixo) |
 | `img/hero.webp` | fotografia do topo |
 | `img/servicos/` | imagem opcional por serviço (ver LEIA-ME lá dentro) |
+
+## Ícones
+
+Nove dos dez vêm do conjunto de traço fino que o proprietário escolheu
+(`2631186_7994.eps`, 225 ícones, o mesmo das páginas de admin do n8n) — aqui
+são os **vetores verdadeiros do ficheiro**, não desenhos à mão: a secção
+PostScript do EPS binário foi convertida a PDF, as demãos (`m`/`l`/`c`/`f`)
+extraídas do fluxo de conteúdo e recortadas pela grelha 15×15.
+
+| ficheiro | onde | desenho |
+|---|---|---|
+| `taxi.svg` | serviço *ocasional* (e omissão) | táxi |
+| `repeat.svg` | serviço *regular* | setas em ciclo |
+| `bus.svg` | serviço *escolar* | autocarro escolar |
+| `person.svg` | serviço *privado* | pessoa de fato |
+| `users.svg` | serviço *partilhado* | grupo de três |
+| `pin.svg` | campo da recolha e lista de sugestões | pin de mapa |
+| `signpost.svg` | campo do destino | poste indicador |
+| `note.svg` | caixa das regras | bloco de notas |
+| `school.svg` | rótulo da subscrição escolar | edifício da escola |
+| `check.svg` | visto do ecrã final | ✕ **não** é do conjunto |
+
+O `check.svg` ficou como estava **porque o conjunto não tem um visto isolado**
+— o único que lá existe está preso dentro de uma pasta. É desenho da casa, e
+não vale a pena forçar um recorte por causa disso.
+
+**A escala é uniforme** (0,55 do tamanho original, em caixa de 24), não é o
+ícone esticado até encher a caixa. Normalizar cada um à mesma altura mudava a
+espessura do traço de ícone para ícone — a 17 px, ao lado uns dos outros nos
+campos de morada, isso via-se. Assim mantém-se o equilíbrio óptico do conjunto
+original e o traço fica igual em todos.
+
+**São formas preenchidas, não traços** (`fill`, sem `stroke`): o conjunto é de
+contorno desenhado. Não faz diferença nenhuma para o mask, que só olha ao
+canal alfa, e escusa de se escalar a espessura do traço à parte.
 
 ## Versão no rodapé
 

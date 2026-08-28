@@ -505,8 +505,9 @@
     var box = el('div', 'mg-item');
 
     var top = el('div', 'mg-top');
-    top.appendChild(el('div', 'mg-when',
-      s.sub_type === 'school' ? ('🏫 ' + (s.school_name || 'Transporte Escolar')) : 'Regular porta-a-porta'));
+    var escolar = s.sub_type === 'school';
+    top.appendChild(el('div', escolar ? 'mg-when school' : 'mg-when',
+      escolar ? (s.school_name || 'Transporte Escolar') : 'Regular porta-a-porta'));
     top.appendChild(el('div', 'mg-code', (s.sub_code || '—')));
     box.appendChild(top);
 
