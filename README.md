@@ -31,6 +31,39 @@ A chave Supabase em `config.js` é a publicável (`anon`) e, sozinha, não lê
 nenhuma tabela: todas têm RLS sem policies para `anon`. O único caminho para
 dentro é um token de sessão válido, que dura 3 horas.
 
+## Só telemóvel
+
+A página **só abre em telemóvel** (desde 01-09-2026). Num tablet ou num
+computador mostra-se o ecrã `#nomobile` — "Abra no telemóvel" — e mais nada:
+nem formulário, nem lista de viagens, nem sequer o `session_bootstrap`. A
+verificação é a primeira linha do `boot()`, antes de qualquer RPC, por isso um
+ecrã grande nunca chega a ver dados de reserva nenhuns. Vale para os dois
+modos, o `#t=` e o `#m=`.
+
+Não há maneira certa de saber o dispositivo; há sinais, e a ordem em que se
+lêem é escolhida a pensar em qual dos dois erros custa mais — **deixar entrar
+um tablet é chato, barrar um cliente com telemóvel é perder a reserva**. Por
+isso o `deviceIsPhone()` confirma primeiro que *é* telemóvel e só depois
+procura a prova de que não é:
+
+| ordem | sinal | decide |
+|---|---|---|
+| 1 | UA diz `iPhone`/`iPod`/`Windows Phone`/`BlackBerry`/… | abre |
+| 2 | UA diz `Android` | abre **só** com `Mobile` na UA — o tablet cala-o |
+| 3 | UA diz `iPad`, ou diz `Macintosh` **e tem toque** | bloqueia (iPadOS 13+ diz-se Mac; o que o denuncia é o toque) |
+| 4 | tem toque e o lado menor do ecrã ≤ 500 px | abre — é o "pedir versão para computador" num telemóvel |
+| 5 | `navigator.userAgentData.mobile` | o que ele disser (só Chromium) |
+| — | nada disto | bloqueia |
+
+A regra 4 existe porque o "pedir versão para computador" troca a UA por uma de
+secretária e, sem ela, o cliente ficava barrado no seu próprio telemóvel.
+Nenhum portátil tem 500 px de lado menor — o mais pequeno anda nos 768 —, por
+isso não abre a porta a ninguém.
+
+**Não há escape**: nem parâmetro no URL, nem "continuar mesmo assim". Para
+verificar o caminho do telemóvel a partir daqui usa-se o Chrome com
+`--user-agent="…iPhone…"` (ver "Verificar a página" no CLAUDE.md do `/root/n8n`).
+
 ## Ficheiros
 
 | | |
@@ -39,13 +72,13 @@ dentro é um token de sessão válido, que dura 3 horas.
 | `styles.css` | desenho "A · Noite": topo com foto, Poppins, ícones em traço |
 | `app.js` | lógica: sessão, moradas, orçamento, submissão |
 | `config.js` | URLs e chaves públicas |
-| `icons/` | 10 ícones monocromáticos, aplicados por CSS mask (ver abaixo) |
+| `icons/` | 11 ícones monocromáticos, aplicados por CSS mask (ver abaixo) |
 | `img/hero.webp` | fotografia do topo |
 | `img/servicos/` | imagem opcional por serviço (ver LEIA-ME lá dentro) |
 
 ## Ícones
 
-Nove dos dez vêm do conjunto de traço fino que o proprietário escolheu
+Dez dos onze vêm do conjunto de traço fino que o proprietário escolheu
 (`2631186_7994.eps`, 225 ícones, o mesmo das páginas de admin do n8n) — aqui
 são os **vetores verdadeiros do ficheiro**, não desenhos à mão: a secção
 PostScript do EPS binário foi convertida a PDF, as demãos (`m`/`l`/`c`/`f`)
@@ -62,6 +95,7 @@ extraídas do fluxo de conteúdo e recortadas pela grelha 15×15.
 | `signpost.svg` | campo do destino | poste indicador |
 | `note.svg` | caixa das regras | bloco de notas |
 | `school.svg` | rótulo da subscrição escolar | edifício da escola |
+| `phone.svg` | ecrã "Abra no telemóvel" | telemóvel |
 | `check.svg` | visto do ecrã final | ✕ **não** é do conjunto |
 
 O `check.svg` ficou como estava **porque o conjunto não tem um visto isolado**

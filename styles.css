@@ -100,6 +100,21 @@ body{
 }
 .done-wait p{margin:0; max-width:30ch; font-size:14px; color:var(--tx-2)}
 
+/* Ecrã "só telemóvel". O link é pessoal e traz um token: abre-se onde chegou,
+   no telemóvel. Quem o abre num tablet ou num computador vê isto e mais nada —
+   a verificação é o deviceIsPhone() do app.js e corre antes de qualquer RPC. */
+.only-phone{
+  width:86px; height:86px; border-radius:50%; display:grid; place-items:center;
+  background:var(--card-2); border:3px solid var(--acc-dim);
+  animation:pop .55s var(--ease) both;
+}
+.only-phone::before{
+  content:""; width:46px; height:46px; background:var(--acc);
+  -webkit-mask:url(icons/phone.svg) center/contain no-repeat;
+  mask:url(icons/phone.svg) center/contain no-repeat;
+}
+.gate p.np-hint{font-size:14px; color:var(--tx-3)}
+
 /* ══════════════════════════════════ topo com foto ══════════════════════ */
 
 .hero{

@@ -353,7 +353,58 @@
     el.appendChild(document.createTextNode('\u00A0?'));
   }
 
+  /* ------------------------------------------------------- só telemóvel
+   *
+   * O link é pessoal, traz um token no fragmento e chega por WhatsApp: abre-se
+   * no telemóvel onde chegou. Em tablet ou computador mostra-se o ecrã
+   * `#nomobile` e mais nada — a verificação corre ANTES de qualquer RPC, para
+   * que um ecrã grande nunca chegue a ver dados de reserva nenhuns.
+   *
+   * Não há maneira certa de saber o dispositivo; há sinais. A ordem abaixo é
+   * escolhida a pensar no erro que custa mais: **deixar entrar um tablet é
+   * chato, barrar um cliente com telemóvel é perder a reserva**. Por isso
+   * confirma-se primeiro que é telemóvel (regras 1-2), e só depois se procura
+   * a prova de que não é (3-4); o que não se reconhece de todo fica de fora,
+   * que é o que o proprietário pediu.
+   */
+  function deviceIsPhone() {
+    var ua = navigator.userAgent || '';
+    var toques = navigator.maxTouchPoints || 0;
+
+    // 1. telemóveis que se identificam pelo nome.
+    if (/iPhone|iPod|Windows Phone|IEMobile|BlackBerry|BB10|Opera Mini/i.test(ua)) return true;
+
+    // 2. Android diz "Mobile" no telemóvel e cala-o no tablet — é a única
+    //    diferença entre os dois, e vale para o Chrome, Firefox e Samsung.
+    if (/Android/i.test(ua)) return /Mobile/i.test(ua);
+
+    // 3. iPad. Desde o iPadOS 13 o Safari diz-se "Macintosh"; o que o denuncia
+    //    é ter toque, que um Mac não tem.
+    if (/iPad/i.test(ua)) return false;
+    if (/Macintosh/i.test(ua) && toques > 1) return false;
+
+    // 4. "Pedir versão para computador" num telemóvel: a UA passa a de
+    //    secretária, mas o ecrã continua a ser de telemóvel. Nenhum portátil
+    //    tem 500 px de lado menor (o mais pequeno anda nos 768).
+    var lado = Math.min(screen.width || 0, screen.height || 0);
+    if (toques > 0 && lado > 0 && lado <= 500) return true;
+
+    // 5. Chromium moderno responde a isto de forma directa — false em
+    //    secretária e em tablet. Fica no fim porque só ele o tem.
+    var uad = navigator.userAgentData;
+    if (uad && typeof uad.mobile === 'boolean') return uad.mobile;
+
+    return false;
+  }
+
+  function soTelemovel() {
+    $('gate').hidden = true;
+    $('nomobile').hidden = false;
+  }
+
   function boot() {
+    if (!deviceIsPhone()) return soTelemovel();
+
     stamp();
     $('termsLink').href = CFG.TERMOS;
     $('mgWa').href = 'https://wa.me/' + CFG.WHATSAPP;

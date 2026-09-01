@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=ae2d945">
+<link rel="stylesheet" href="styles.css?v=76e6513">
 </head>
 <body>
 
@@ -18,6 +18,16 @@
   <div id="gateSpin" class="spinner"></div>
   <p id="gateMsg">A abrir a sua reserva…</p>
   <a id="gateWa" class="btn-wa" href="#" hidden>Voltar ao WhatsApp</a>
+</div>
+
+<!-- só telemóvel: em tablet ou computador não se abre nada (ver soTelemovel()) -->
+<div id="nomobile" class="gate" hidden>
+  <div class="only-phone"></div>
+  <h2>Abra no telemóvel</h2>
+  <p>Esta página só funciona em telemóvel. Em tablet ou computador não é possível
+    marcar, alterar nem cancelar viagens.</p>
+  <p class="np-hint">Abra a conversa do WhatsApp <strong>no telemóvel</strong> e toque
+    outra vez no botão que lhe enviámos.</p>
 </div>
 
 <!-- ecrã de gestão: só com um link #m= (cancelar / alterar) -->
@@ -263,7 +273,7 @@
   <a class="btn-wa" id="doneWa" href="#" hidden>Voltar ao WhatsApp</a>
 </div>
 
-<script src="config.js?v=ae2d945"></script>
-<script src="app.js?v=ae2d945"></script>
+<script src="config.js?v=76e6513"></script>
+<script src="app.js?v=76e6513"></script>
 </body>
 </html>
