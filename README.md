@@ -29,7 +29,14 @@ de dentro do Postgres. O que o browser enviar é ignorado.
 
 A chave Supabase em `config.js` é a publicável (`anon`) e, sozinha, não lê
 nenhuma tabela: todas têm RLS sem policies para `anon`. O único caminho para
-dentro é um token de sessão válido, que dura 3 horas.
+dentro é um token de sessão válido, que **dura 30 minutos** — tanto o link de
+reserva como o de gestão, desde 17-08-2026 (o de reserva era de 3 h).
+
+> **Cuidado ao mintar uma sessão à mão para testar**: quem põe os 30 minutos é
+> quem cria o link (`p_ttl_minutes: 30`, no `sendBookingLink`/`sendManageLink`
+> do Gate Router), não a RPC — o valor por omissão do `create_booking_session`
+> ficou nos 180 minutos. Uma sessão criada sem esse parâmetro vive 3 h e não é
+> a que o cliente tem.
 
 ## Só telemóvel
 
